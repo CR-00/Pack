@@ -1,0 +1,4 @@
+/* Seems like an issue with the library, the default doesn't hide. */
+div .leaflet-routing-container-hide{ display: none; }
+
+.leaflet-control-attribution{ display: none; }
