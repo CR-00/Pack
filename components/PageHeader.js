@@ -1,8 +1,9 @@
-import { Header, Group, Title } from "@mantine/core";
+import { Header, Group, Title, Box } from "@mantine/core";
 import { useSession } from "next-auth/react";
 import { Button } from "@mantine/core";
 import Link from "next/link";
 import SignOut from "./SignOut";
+import Image from "next/image";
 
 export default function PageHeader() {
   const { data: session, status } = useSession();
@@ -12,11 +13,9 @@ export default function PageHeader() {
       <Group position="apart">
         <Group noWrap>
           <Link href="/">
-            <img
-              style={{
-                width: "100%",
-                height: "40px",
-              }}
+            <Image
+              width={56}
+              height={40}
               src={
                 "https://res.cloudinary.com/dkoyqu0ds/image/upload/v1667126070/pack/pack-logo_vhoutm.png"
               }
