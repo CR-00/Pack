@@ -91,11 +91,16 @@ model Coordinate {
 model KitItem {
   id       Int    @id @default(autoincrement())
   event    Event  @relation(fields: [eventId], references: [id])
-  eventId  Int    @unique
+  eventId  Int    
   owner    User   @relation(fields: [ownerId], references: [id])
   ownerId  String
-  name     String
-  capacity Int
+  name     KitItems
+  capacity Int?
+}
+
+enum KitItems {
+  TENT
+  STOVE
 }
 
 model EventAttendee {

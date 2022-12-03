@@ -56,7 +56,7 @@ export default async (req, res) => {
         kitItems: {
           create: [
             {
-              name: "tent",
+              name: "TENT",
               capacity: eventKit.tentSleeps,
               owner: {
                 connect: {

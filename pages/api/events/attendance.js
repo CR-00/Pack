@@ -7,7 +7,7 @@ export default async (req, res) => {
 
     const session = await getSession({ req });
     if (!session) {
-      res.status(401).send({ error: "Not signed in." });
+      return res.status(401).send({ error: "Not signed in." });
     }
   
     const user = await prisma.user.findUnique({
@@ -41,6 +41,6 @@ export default async (req, res) => {
         },
     });
 
-    res.status(200).send(upsertAttendance);
+    return res.status(200).send(upsertAttendance);
   }
 };

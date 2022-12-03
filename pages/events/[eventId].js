@@ -46,6 +46,13 @@ export default function Event({ event, attendees }) {
     initialData: { data: attendees }
   });
 
+  const { data: kitItemData } = useQuery({
+    queryKey: ["kitItems", event.id],
+    queryFn: () => api.get(`/events/kit/${event.id}`),
+    initialData: { data: kitItems }
+  });
+
+ 
   // Preload this tab.
   const Map = React.useMemo(
     () =>
@@ -94,7 +101,7 @@ export default function Event({ event, attendees }) {
             />
           </Tabs.Panel>
           <Tabs.Panel value="kit" pt="xl">
-            <KitSummary kitItems={kitItems} attendees={attendeeData.data} />
+            <KitSummary kitItems={kitItemData.data} attendees={attendeeData.data} />
           </Tabs.Panel>
           <Tabs.Panel value="attendees" pt="xl">
             <EventAttendees attendees={attendeeData.data} />

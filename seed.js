@@ -54,7 +54,7 @@ const seed = async () => {
           kitItems: {
             create: [
               {
-                name: "tent",
+                name: "TENT",
                 capacity: 1 + Math.floor(Math.random() * 4),
                 owner: {
                   connect: {
