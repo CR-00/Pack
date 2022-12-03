@@ -5,16 +5,18 @@ import "leaflet-defaulticon-compatibility/dist/leaflet-defaulticon-compatibility
 import "leaflet-defaulticon-compatibility";
 
 export default function MapPreview({ centerPoint }) {
-    return (
+  return (
+    <div style={{ height: "100%", width: "100%"}}>
     <MapContainer
       center={centerPoint}
       zoom={5}
       zoomControl={false}
       scrollWheelZoom={false}
       dragging={false}
-      style={{ height: "250px", width: "350px", zIndex: "0" }}
+      style={{ height: "250px", minWidth: "350px", zIndex: "0" }}
     >
       <TileLayer url={openStreetMapLayers["standard"]} />
     </MapContainer>
+    </div>
   );
 }

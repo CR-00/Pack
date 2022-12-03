@@ -81,13 +81,12 @@ export default function Home({ events }) {
         </Grid.Col>
       </Grid>
       <Divider my="sm" />
-      <Grid>
+      <Grid grow>
         {data?.pages.map((page) => {
           return page.data.events.map((event) => (
             <Grid.Col
               key={event.id}
               span={3}
-              sx={(theme) => ({ "&:hover": { boxShadow: theme.shadows.xl } })}
             >
               <Link
                 href={`/events/${event.id}`}
@@ -95,6 +94,7 @@ export default function Home({ events }) {
                 style={{ textDecoration: "none" }}
               >
                 <EventCard
+                  shadow
                   centerPoint={findCenter(event.coordinates)}
                   name={event.description.name}
                   description={event.description.description}
