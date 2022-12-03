@@ -20,9 +20,10 @@ export const config = {
 };
 
 export default async (req, res) => {
+
   const session = await getSession({ req });
   if (!session) {
-    res.status(401).send({ error: "Not signed in." });
+    return res.status(401).send({ msg: "Not signed in." });
   }
 
   if (req.method === "GET") {
@@ -31,7 +32,7 @@ export default async (req, res) => {
         email: session.user.email,
       }
     });
-    res.status(200).send({ user });
+    return res.status(200).send({ user });
   }
   else if (req.method === "POST") {
 
@@ -83,10 +84,10 @@ export default async (req, res) => {
         },
       });
     } else {
-      res.status(500).send({ error: "Unable to upload file." });
+      return res.status(500).send({ error: "Unable to upload file." });
     }
 
-    res.status(200).send({
+    return res.status(200).send({
       name: data.fields.name,
       email: data.fields.email,
       image: result.url,

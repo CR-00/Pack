@@ -62,7 +62,7 @@ export default function Nav() {
           <Link href="/profile">
             <Group position="center">
               <Tooltip label="Profile" position="right">
-                <Avatar src={data.data.user.image} />
+                <Avatar src={data.data.user.image} alt="user-avatar"/>
               </Tooltip>
             </Group>
           </Link>

@@ -12,7 +12,7 @@ import {
   ThemeIcon,
   Title,
 } from "@mantine/core";
-import React, { useState } from "react";
+import React from "react";
 import prisma, { exclude } from "../../lib/prisma";
 import {
   IconNotebook,
@@ -26,6 +26,8 @@ import dynamic from "next/dynamic";
 import findCenter from "../../lib/findCentre";
 import KitSummary from "../../components/KitSummary";
 import EventAttendees from "../../components/EventAttendees";
+import { useQuery } from "@tanstack/react-query";
+import api from "../../lib/api";
 
 const tabs = [
   { label: "description", Icon: IconNotebook },
@@ -35,8 +37,15 @@ const tabs = [
 ];
 
 export default function Event({ event, attendees }) {
+
   const { description, kitItems, creator, coordinates } = event;
-  console.log(attendees);
+  
+  const { data: attendeeData } = useQuery({
+    queryKey: ["attendance", event.id],
+    queryFn: () => api.get(`/events/attendance/${event.id}`),
+    initialData: { data: attendees }
+  });
+
   // Preload this tab.
   const Map = React.useMemo(
     () =>
@@ -53,7 +62,7 @@ export default function Event({ event, attendees }) {
         <Group p="md" position="apart" align="top">
           <Title>{description.name}</Title>
           <Box sx={(theme) => ({ paddingRight: theme.spacing.xl })}>
-            <Avatar src={creator.image} />
+            <Avatar src={creator.image} alt="event-creator-avatar"/>
             <Text size="xs" align="center" weight={700}>
               {creator.name}
             </Text>
@@ -85,10 +94,10 @@ export default function Event({ event, attendees }) {
             />
           </Tabs.Panel>
           <Tabs.Panel value="kit" pt="xl">
-            <KitSummary kitItems={kitItems} attendees={attendees} />
+            <KitSummary kitItems={kitItems} attendees={attendeeData.data} />
           </Tabs.Panel>
           <Tabs.Panel value="attendees" pt="xl">
-            <EventAttendees attendees={attendees} />
+            <EventAttendees attendees={attendeeData.data} />
           </Tabs.Panel>
         </Tabs>
       </Paper>
@@ -97,17 +106,23 @@ export default function Event({ event, attendees }) {
 }
 
 export async function getStaticPaths() {
+  let events = await prisma.event.findMany();
   return {
-    paths: [],
+    paths: events.map((event) => ({
+      params: { eventId: String(event.id) },
+    })),
     fallback: "blocking",
   };
 }
 
 export async function getStaticProps(context) {
   let { eventId } = context.params;
+
+  eventId = parseInt(eventId);
+
   const event = await prisma.event.findUnique({
     where: {
-      id: parseInt(eventId),
+      id: eventId,
     },
     include: {
       description: true,
@@ -120,7 +135,7 @@ export async function getStaticProps(context) {
 
   const attendees = await prisma.eventAttendee.findMany({
     where: {
-      eventId: parseInt(eventId),
+      eventId
     },
     include: {
       user: true,

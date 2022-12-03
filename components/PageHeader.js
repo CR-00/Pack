@@ -16,6 +16,7 @@ export default function PageHeader() {
             <Image
               width={56}
               height={40}
+              alt="pack-logo"
               src={
                 "https://res.cloudinary.com/dkoyqu0ds/image/upload/v1667126070/pack/pack-logo_vhoutm.png"
               }

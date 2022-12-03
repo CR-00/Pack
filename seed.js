@@ -17,10 +17,12 @@ const dropAll = async () => {
   const deleteEvents = prisma.event.deleteMany();
   const deleteDescriptions = prisma.eventDescription.deleteMany();
   const deleteCoordinates = prisma.coordinate.deleteMany();
+  const deleteAttendees = prisma.eventAttendee.deleteMany();
   const deleteKit = prisma.kitItem.deleteMany();
   await prisma.$transaction([
     deleteDescriptions,
     deleteCoordinates,
+    deleteAttendees,
     deleteKit,
     deleteEvents,
   ]);

@@ -23,8 +23,6 @@ import api from "../lib/api";
 import { useInView } from 'react-intersection-observer'
 
 export default function Home({ events }) {
-  //console.log(events);
-
   const [eventIds, setEventIds] = useState([]);
   const {
     data,
@@ -40,7 +38,6 @@ export default function Home({ events }) {
     },
     {
       getNextPageParam: (page) => {
-        console.log(page.data.nextId );
         return page.data.nextId ? page.data.nextId : false
       }
     },
