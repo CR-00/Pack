@@ -19,7 +19,7 @@ import {
   IconMapPin,
   IconListDetails,
   IconUsers,
-  IconCrown,
+  IconSettings,
 } from "@tabler/icons";
 import EventDescription from "../../components/EventDescription";
 import dynamic from "next/dynamic";
@@ -28,6 +28,8 @@ import KitSummary from "../../components/KitSummary";
 import EventAttendees from "../../components/EventAttendees";
 import { useQuery } from "@tanstack/react-query";
 import api from "../../lib/api";
+import { useSession } from "next-auth/react";
+import { EventSettings } from "../../components/EventSettings";
 
 const tabs = [
   { label: "description", Icon: IconNotebook },
@@ -37,22 +39,22 @@ const tabs = [
 ];
 
 export default function Event({ event, attendees }) {
-
   const { description, kitItems, creator, coordinates } = event;
-  
+
   const { data: attendeeData } = useQuery({
     queryKey: ["attendance", event.id],
     queryFn: () => api.get(`/events/attendance/${event.id}`),
-    initialData: { data: attendees }
+    initialData: { data: attendees },
   });
 
   const { data: kitItemData } = useQuery({
     queryKey: ["kitItems", event.id],
     queryFn: () => api.get(`/events/kit/${event.id}`),
-    initialData: { data: kitItems }
+    initialData: { data: kitItems },
   });
 
- 
+  const { data: session } = useSession();
+
   // Preload this tab.
   const Map = React.useMemo(
     () =>
@@ -69,7 +71,7 @@ export default function Event({ event, attendees }) {
         <Group p="md" position="apart" align="top">
           <Title>{description.name}</Title>
           <Box sx={(theme) => ({ paddingRight: theme.spacing.xl })}>
-            <Avatar src={creator.image} alt="event-creator-avatar"/>
+            <Avatar src={creator.image} alt="event-creator-avatar" />
             <Text size="xs" align="center" weight={700}>
               {creator.name}
             </Text>
@@ -90,6 +92,19 @@ export default function Event({ event, attendees }) {
                 <Text transform="capitalize">{label}</Text>
               </Tabs.Tab>
             ))}
+            {session?.user.id === event.creatorId && (
+              <Tabs.Tab
+                key="settings"
+                value="settings"
+                icon={
+                  <ThemeIcon>
+                    <IconSettings size={18} />
+                  </ThemeIcon>
+                }
+              >
+                <Text>Settings</Text>
+              </Tabs.Tab>
+            )}
           </Tabs.List>
           <Tabs.Panel value="description" pt="xl">
             <EventDescription description={description} />
@@ -101,10 +116,16 @@ export default function Event({ event, attendees }) {
             />
           </Tabs.Panel>
           <Tabs.Panel value="kit" pt="xl">
-            <KitSummary kitItems={kitItemData.data} attendees={attendeeData.data} />
+            <KitSummary
+              kitItems={kitItemData.data}
+              attendees={attendeeData.data}
+            />
           </Tabs.Panel>
           <Tabs.Panel value="attendees" pt="xl">
             <EventAttendees attendees={attendeeData.data} />
+          </Tabs.Panel>
+          <Tabs.Panel value="settings" pt="xl">
+            <EventSettings event={event} />
           </Tabs.Panel>
         </Tabs>
       </Paper>
@@ -142,7 +163,7 @@ export async function getStaticProps(context) {
 
   const attendees = await prisma.eventAttendee.findMany({
     where: {
-      eventId
+      eventId,
     },
     include: {
       user: true,

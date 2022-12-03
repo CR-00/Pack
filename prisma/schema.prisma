@@ -60,7 +60,7 @@ model VerificationToken {
 
 model Event {
   id          Int               @id @default(autoincrement())
-  creator     User              @relation(fields: [creatorId], references: [id])
+  creator     User              @relation(fields: [creatorId], references: [id], onDelete: Cascade)
   creatorId   String
   description EventDescription?
   coordinates Coordinate[]
@@ -70,7 +70,7 @@ model Event {
 
 model EventDescription {
   id          Int    @id @default(autoincrement())
-  event       Event  @relation(fields: [eventId], references: [id])
+  event       Event  @relation(fields: [eventId], references: [id], onDelete: Cascade)
   eventId     Int    @unique
   name        String
   description String
@@ -82,17 +82,17 @@ model EventDescription {
 
 model Coordinate {
   id      Int   @id @default(autoincrement())
-  event   Event @relation(fields: [eventId], references: [id])
+  event   Event @relation(fields: [eventId], references: [id], onDelete: Cascade)
   eventId Int
   lat     Float
   lng     Float
 }
 
 model KitItem {
-  id       Int    @id @default(autoincrement())
-  event    Event  @relation(fields: [eventId], references: [id])
-  eventId  Int    
-  owner    User   @relation(fields: [ownerId], references: [id])
+  id       Int      @id @default(autoincrement())
+  event    Event    @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  eventId  Int
+  owner    User     @relation(fields: [ownerId], references: [id], onDelete: Cascade)
   ownerId  String
   name     KitItems
   capacity Int?
@@ -104,11 +104,12 @@ enum KitItems {
 }
 
 model EventAttendee {
-  event   Event            @relation(fields: [eventId], references: [id])
-  eventId Int              
-  user    User             @relation(fields: [userId], references: [id])
-  userId  String           
+  event   Event            @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  eventId Int
+  user    User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId  String
   status  AttendenceStatus
+
   @@id([eventId, userId])
 }
 
