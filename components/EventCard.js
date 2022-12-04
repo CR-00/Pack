@@ -1,44 +1,63 @@
-import { Card, Text, Group, Rating, Loader } from "@mantine/core";
-import { useHover } from "@mantine/hooks";
+import { Card, Text, Group, Rating, Loader, Box, Title } from "@mantine/core";
+import { IconCalendarEvent, IconUsers } from "@tabler/icons";
 import dynamic from "next/dynamic";
 import React from "react";
+import formatDateString from "../lib/formatDateString";
+import coordsToTilePng from "../lib/coordsToTilePng";
 
 export default function EventCard({
   centerPoint,
   name,
-  description,
   difficulty,
+  start,
   shadow,
 }) {
-  const { hovered, ref } = useHover();
-
-  const MapPreview = React.useMemo(
-    () =>
-      dynamic(() => import("../components/MapPreview"), {
-        loading: () => <Loader />,
-        ssr: false,
-      }),
-    []
-  );
-
   return (
-    <Card
-      p="lg"
-      radius="md"
-      withBorder
-      ref={ref}
-      shadow={shadow && hovered && "xl"}
+    <Box
+      sx={(theme) => ({
+        backgroundColor: theme.colors.gray[0],
+        border: "1px solid",
+        borderRadius: "5px",
+        position: "relative",
+        textDecoration: "none",
+        overflow: "hidden",
+        borderColor: theme.colors.dark[0],
+        "&:hover": {
+          transform: "scale(1.03)",
+          boxShadow: theme.shadows.xl,
+        },
+        background:
+          "linear-gradient(180deg, rgba(0, 0, 0, 0) 0%, rgba(0, 0, 0, .85) 90%)",
+      })}
     >
-      <Card.Section>
-        <MapPreview centerPoint={centerPoint} />
-      </Card.Section>
-      <Group position="apart" mt="md" mb="xs">
-        <Text weight={500}>{name}</Text>
+      <img
+        src={coordsToTilePng(centerPoint.lat, centerPoint.lng, 12)}
+        alt="OpenStreetMap Image"
+        style={{
+          width: "100%",
+          zIndex: -1,
+        }}
+      />
+      <Box
+        style={{
+          padding: "10px",
+          position: "absolute",
+          bottom: "10px",
+          left: "10px",
+        }}
+      >
+        <Title
+          order={2}
+          style={{ margin: 0, padding: 0, wordWrap: "break-word" }}
+        >
+          {name}
+        </Title>
         <Rating defaultValue={difficulty} color="brand.4" readOnly />
-      </Group>
-      <Text size="sm" color="dimmed" sx={{ maxWidth: 250 }}>
-        {description}
-      </Text>
-    </Card>
+        <div style={{ display: "flex", alignItems: "center", marginTop: 5 }}>
+          <IconCalendarEvent size={20} />
+          <Text>{formatDateString(start)}</Text>
+        </div>
+      </Box>
+    </Box>
   );
 }

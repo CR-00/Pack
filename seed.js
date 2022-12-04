@@ -1,16 +1,47 @@
 const { PrismaClient } = require("@prisma/client");
+const { _ } = require("lodash");
 
 const prisma = new PrismaClient();
 
 function getRandomRoute() {
-  let pins = [];
-  for (let i = 0; i < Math.random() * 10; i++) {
-    pins.push({
-      lat: (Math.random() * (90 - -90) + -90).toFixed(3) * 1,
-      lng: (Math.random() * (180 - -180) + -180).toFixed(3) * 1,
-    });
-  }
-  return pins;
+  // Bunch of random coordinates in the UK, 
+  // 71% of the earths surface is water covered according to
+  // google, which does not make for a
+  const coords = [
+    { 
+      lat: 53.243595,
+      lng: -1.580183
+    },
+    { 
+      lat: 54.121961,
+      lng: -2.080394
+    },
+    { 
+      lat: 54.375508,
+      lng: -1.053041
+    },
+    { 
+      lat: 54.741817,
+      lng: -2.241398
+    },
+    { 
+      lat: 55.402267,
+      lng: -3.313280
+    },
+    { 
+      lat: 55.129974,
+      lng: -4.288874
+    },
+    { 
+      lat: 56.265998,
+      lng: -4.409804
+    },
+    { 
+      lat: 57.062904,
+      lng: -3.601770
+    },
+  ]
+  return _.sample(coords);
 }
 
 const dropAll = async () => {

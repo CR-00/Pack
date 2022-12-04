@@ -11,7 +11,7 @@ export default async (req, res) => {
   if (req.method === "GET") {
     let { page } = req.query;
     page = parseInt(page);
-    const limit = 10;
+    const limit = 20;
     const events = await prisma.event.findMany({
       take: limit,
       skip: page * limit,
@@ -23,7 +23,13 @@ export default async (req, res) => {
         kitItems: true,
         coordinates: true,
         creator: true,
+        attendees: true
       },
+    });
+
+    // Update with attendee length.
+    events.forEach((e) => {
+      e.attendees = e.attendees.length
     });
 
     res.json({

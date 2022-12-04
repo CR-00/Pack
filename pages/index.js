@@ -2,6 +2,7 @@ import {
   Button,
   Center,
   Divider,
+  Flex,
   Grid,
   Group,
   Loader,
@@ -20,7 +21,7 @@ import prisma from "../lib/prisma";
 import EventCard from "../components/EventCard";
 import findCenter from "../lib/findCentre";
 import api from "../lib/api";
-import { useInView } from 'react-intersection-observer'
+import { useInView } from "react-intersection-observer";
 
 export default function Home({ events }) {
   const [eventIds, setEventIds] = useState([]);
@@ -33,13 +34,13 @@ export default function Home({ events }) {
     isLoading,
   } = useInfiniteQuery(
     ["events"],
-    async ({ pageParam = 1}) => {
+    async ({ pageParam = 1 }) => {
       return await api.get(`/events?page=${pageParam}`);
     },
     {
       getNextPageParam: (page) => {
-        return page.data.nextId ? page.data.nextId : false
-      }
+        return page.data.nextId ? page.data.nextId : false;
+      },
     },
     { initialData: events }
   );
@@ -47,9 +48,9 @@ export default function Home({ events }) {
   const { ref, inView } = useInView();
   useEffect(() => {
     if (inView && hasNextPage) {
-      fetchNextPage()
+      fetchNextPage();
     }
-  }, [inView])
+  }, [inView]);
 
   // Start with dates unpicked.
   const [value, setValue] = useState([null, null]);
@@ -81,33 +82,37 @@ export default function Home({ events }) {
         </Grid.Col>
       </Grid>
       <Divider my="sm" />
-      <Grid grow>
+      <Flex
+        gap="md"
+        wrap="wrap"
+        flex="1"
+        justify="center"
+        flexWrap="wrap"
+        minWidth="100%"
+        basis="100%"
+        sx={(theme) => ({ paddingTop: theme.spacing.lg })}
+      >
         {data?.pages.map((page) => {
           return page.data.events.map((event) => (
-            <Grid.Col
+            <Link
               key={event.id}
-              span={3}
+              href={`/events/${event.id}`}
+              prefetch={false}
+              style={{ textDecoration: "none", color: "inherit" }}
             >
-              <Link
-                href={`/events/${event.id}`}
-                prefetch={false}
-                style={{ textDecoration: "none" }}
-              >
-                <EventCard
-                  shadow
-                  centerPoint={findCenter(event.coordinates)}
-                  name={event.description.name}
-                  description={event.description.description}
-                  difficulty={event.description.difficulty}
-                />
-              </Link>
-            </Grid.Col>
+              <EventCard
+                centerPoint={findCenter(event.coordinates)}
+                name={event.description.name}
+                start={event.description.start}
+                difficulty={event.description.difficulty}
+              />
+            </Link>
           ));
         })}
-      </Grid>
+      </Flex>
       <Center p="xl" ref={ref}>
         {isFetchingNextPage && <Loader />}
-        {!isFetchingNextPage &&  <Text >No more events!</Text>}
+        {!isFetchingNextPage && <Text>No more events!</Text>}
       </Center>
     </Paper>
   );
