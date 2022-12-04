@@ -24,26 +24,19 @@ import api from "../lib/api";
 import { useInView } from "react-intersection-observer";
 
 export default function Home({ events }) {
-  const [eventIds, setEventIds] = useState([]);
-  const {
-    data,
-    isSuccess,
-    fetchNextPage,
-    hasNextPage,
-    isFetchingNextPage,
-    isLoading,
-  } = useInfiniteQuery(
-    ["events"],
-    async ({ pageParam = 1 }) => {
-      return await api.get(`/events?page=${pageParam}`);
-    },
-    {
-      getNextPageParam: (page) => {
-        return page.data.nextId ? page.data.nextId : false;
+  const { data, fetchNextPage, hasNextPage, isFetchingNextPage } =
+    useInfiniteQuery(
+      ["events"],
+      async ({ pageParam = 1 }) => {
+        return await api.get(`/events?page=${pageParam}`);
       },
-    },
-    { initialData: events }
-  );
+      {
+        getNextPageParam: (page) => {
+          return page.data.nextId ? page.data.nextId : false;
+        },
+      },
+      { initialData: events }
+    );
 
   const { ref, inView } = useInView();
   useEffect(() => {
@@ -57,31 +50,46 @@ export default function Home({ events }) {
 
   return (
     <Paper p="md">
-      <Grid grow justify="space-between">
-        <Grid.Col span={3}>
-          <Title order={2}>Events</Title>
-        </Grid.Col>
-        <Grid.Col span={3}>
-          <DateRangePicker
-            placeholder="Pick dates range"
-            value={value}
-            onChange={setValue}
-          />
-        </Grid.Col>
-        <Grid.Col span={3}>
-          <TextInput
-            placeholder="Search..."
-            sx={{ width: "100%" }}
-            rightSection={<IconSearch style={{ height: "18px" }} />}
-          />
-        </Grid.Col>
-        <Grid.Col span={1}>
-          <Link href="/events/new">
-            <Button>Create</Button>
-          </Link>
-        </Grid.Col>
-      </Grid>
-      <Divider my="sm" />
+      <Flex
+        grow
+        justify="space-between"
+        gap="xl"
+        basis="100%"
+        direction={{ base: "column-reverse", xs: "row" }}
+      >
+        <Title
+          order={2}
+          sx={(theme) => ({
+            [`@media (max-width: ${theme.breakpoints.xs}px)`]: {
+              display: "none",
+            },
+          })}
+        >
+          Events
+        </Title>
+        <DateRangePicker
+          placeholder="Pick dates range"
+          value={value}
+          onChange={setValue}
+          sx={{ flexGrow: 1 }}
+        />
+        <TextInput
+          placeholder="Search..."
+          rightSection={<IconSearch style={{ height: "18px" }} />}
+          sx={{ flexGrow: 1 }}
+        />
+        <Link href="/events/new" style={{ alignSelf: "flex-end" }}>
+          <Button>Create</Button>
+        </Link>
+      </Flex>
+      <Divider
+        my="sm"
+        sx={(theme) => ({
+          [`@media (max-width: ${theme.breakpoints.xs}px)`]: {
+            display: "none",
+          },
+        })}
+      />
       <Flex
         gap="md"
         wrap="wrap"
@@ -98,7 +106,7 @@ export default function Home({ events }) {
               key={event.id}
               href={`/events/${event.id}`}
               prefetch={false}
-              style={{ textDecoration: "none", color: "inherit" }}
+              style={{ textDecoration: "none", color: "inherit", flexGrow: 1 }}
             >
               <EventCard
                 centerPoint={findCenter(event.coordinates)}
