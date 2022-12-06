@@ -8,13 +8,44 @@ export const config = {
 };
 
 export default async (req, res) => {
+  
   if (req.method === "GET") {
-    let { page } = req.query;
+
+    let { page, start, end, search } = req.query;
+
     page = parseInt(page);
+
+    // No more results.
+    if (isNaN(page)) {
+      return res.status(200).send({ events: [] });
+    }
+
+    const filter = {};
+
+    if (start !== "null" && end !== "null") {
+      filter.start = {
+        gte: new Date(start).toISOString(),
+      };
+      filter.end = {
+        lte: new Date(end).toISOString(),
+      };
+    }
+
+    if (search) {
+      filter.name = {
+        startsWith: req.query.search,
+        mode: "insensitive",
+      };
+    }
+
     const limit = 20;
+
     const events = await prisma.event.findMany({
       take: limit,
       skip: page * limit,
+      where: {
+        description: filter,
+      },
       orderBy: {
         id: "asc",
       },
@@ -23,13 +54,13 @@ export default async (req, res) => {
         kitItems: true,
         coordinates: true,
         creator: true,
-        attendees: true
+        attendees: true,
       },
     });
 
     // Update with attendee length.
     events.forEach((e) => {
-      e.attendees = e.attendees.length
+      e.attendees = e.attendees.length;
     });
 
     res.json({
@@ -77,20 +108,20 @@ export default async (req, res) => {
             {
               user: {
                 connect: {
-                  email: session.user.email
-                }
+                  email: session.user.email,
+                },
               },
-              status: "ACCEPTED"
-            }
-          ]
-        }
+              status: "ACCEPTED",
+            },
+          ],
+        },
       },
       include: {
         description: true,
         kitItems: true,
         coordinates: true,
         creator: true,
-        attendees: true
+        attendees: true,
       },
     });
 

@@ -3,18 +3,15 @@ import {
   Center,
   Divider,
   Flex,
-  Grid,
-  Group,
   Loader,
   Paper,
   Text,
   TextInput,
   Title,
 } from "@mantine/core";
-import { getSession } from "next-auth/react";
 import { IconSearch } from "@tabler/icons";
 import { DateRangePicker, DateRangePickerValue } from "@mantine/dates";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useInfiniteQuery } from "@tanstack/react-query";
 import prisma from "../lib/prisma";
@@ -22,13 +19,20 @@ import EventCard from "../components/EventCard";
 import findCenter from "../lib/findCentre";
 import api from "../lib/api";
 import { useInView } from "react-intersection-observer";
+import { useDebouncedState } from "@mantine/hooks";
 
 export default function Home({ events }) {
+  // Start with dates unpicked.
+  const [dateRange, setDateRange] = useState([null, null]);
+  const [search, setSearch] = useDebouncedState("", 200);
+
   const { data, fetchNextPage, hasNextPage, isFetchingNextPage } =
     useInfiniteQuery(
       ["events"],
       async ({ pageParam = 1 }) => {
-        return await api.get(`/events?page=${pageParam}`);
+        return await api.get(
+          `/events?page=${pageParam}&search=${search}&start=${dateRange[0]}&end=${dateRange[1]}`
+        );
       },
       {
         getNextPageParam: (page) => {
@@ -45,8 +49,23 @@ export default function Home({ events }) {
     }
   }, [inView]);
 
-  // Start with dates unpicked.
-  const [value, setValue] = useState([null, null]);
+  console.log("in view", inView);
+
+  const filterSearchResults = (page) => {
+    let res = page.data.events.filter((e) =>
+      e.description.name.toLowerCase().startsWith(search)
+    );
+
+    if (dateRange[0] && dateRange[1]) {
+      let start = Date.parse(dateRange[0]);
+      let end = Date.parse(dateRange[1]);
+
+      res = res
+        .filter((e) => Date.parse(e.description.start) >= start)
+        .filter((e) => Date.parse(e.description.end) <= end);
+    }
+    return res;
+  };
 
   return (
     <Paper p="md">
@@ -68,13 +87,14 @@ export default function Home({ events }) {
           Events
         </Title>
         <DateRangePicker
-          placeholder="Pick dates range"
-          value={value}
-          onChange={setValue}
+          placeholder="Pick date range"
+          value={dateRange}
+          onChange={setDateRange}
           sx={{ flexGrow: 1 }}
         />
         <TextInput
           placeholder="Search..."
+          onChange={(e) => setSearch(e.currentTarget.value.toLowerCase())}
           rightSection={<IconSearch style={{ height: "18px" }} />}
           sx={{ flexGrow: 1 }}
         />
@@ -101,12 +121,16 @@ export default function Home({ events }) {
         sx={(theme) => ({ paddingTop: theme.spacing.lg })}
       >
         {data?.pages.map((page) => {
-          return page.data.events.map((event) => (
+          return filterSearchResults(page).map((event) => (
             <Link
               key={event.id}
               href={`/events/${event.id}`}
               prefetch={false}
-              style={{ textDecoration: "none", color: "inherit", flexGrow: 1 }}
+              style={{
+                textDecoration: "none",
+                color: "inherit",
+                flexGrow: 1,
+              }}
             >
               <EventCard
                 centerPoint={findCenter(event.coordinates)}
@@ -126,7 +150,7 @@ export default function Home({ events }) {
   );
 }
 
-export async function getStaticProps(context) {
+export async function getStaticProps() {
   const events = await prisma.event.findMany({
     take: 10,
     orderBy: {
@@ -146,24 +170,3 @@ export async function getStaticProps(context) {
     },
   };
 }
-
-/*
-export async function getServerSideProps(context) {
-  // Redirect anyone that signed up with email to
-  // complete their profile before continuing.
-  const session = await getSession(context);
-  const userName = session?.user?.name;
-  if (session && !userName) {
-    return {
-      redirect: {
-        destination: "/auth/complete",
-        permanent: false,
-      },
-    };
-  }
-
-  return {
-    props: { },
-  };
-}
-*/

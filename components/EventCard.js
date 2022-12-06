@@ -5,13 +5,7 @@ import React from "react";
 import formatDateString from "../lib/formatDateString";
 import coordsToTilePng from "../lib/coordsToTilePng";
 
-export default function EventCard({
-  centerPoint,
-  name,
-  difficulty,
-  start,
-  shadow,
-}) {
+export default function EventCard({ centerPoint, name, difficulty, start }) {
   return (
     <Box
       sx={(theme) => ({
@@ -52,7 +46,12 @@ export default function EventCard({
         >
           {name}
         </Title>
-        <Rating defaultValue={difficulty} color="brand.4" readOnly />
+        <Rating
+          defaultValue={difficulty}
+          color="brand.4"
+          readOnly
+          emptySymbol={<></>}
+        />
         <div style={{ display: "flex", alignItems: "center", marginTop: 5 }}>
           <IconCalendarEvent size={20} />
           <Text>{formatDateString(start)}</Text>
