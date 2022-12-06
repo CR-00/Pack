@@ -18,38 +18,16 @@ import { useMediaQuery } from "@mantine/hooks";
 import { useState } from "react";
 import NavLinks from "./NavLinks";
 
-const useStyles = createStyles((theme) => ({
-  root: {
-    position: "relative",
-    zIndex: 0,
-  },
-  dropdown: {
-    position: "absolute",
-    zIndex: 1,
-    margin: 0,
-    left: 0,
-    right: 0,
-    zIndex: 0,
-    borderTopRightRadius: 0,
-    borderTopLeftRadius: 0,
-    borderTopWidth: 0,
-    overflow: "hidden",
-
-    [theme.fn.largerThan("sm")]: {
-      display: "none",
-    },
-  },
-}));
-
 export default function PageHeader() {
-  const classes = useStyles();
+
   const { data: session } = useSession();
+
   const sm = useMediaQuery("(max-width: 640px)");
   const [burgerOpen, setBurgerOpen] = useState(false);
 
   return (
     <>
-      <Header height={60} p="xs" className={classes.root}>
+      <Header height={60} p="xs">
         <Group position="apart">
           <Group noWrap>
             {sm && (
