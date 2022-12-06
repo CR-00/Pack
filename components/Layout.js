@@ -1,12 +1,14 @@
 import { AppShell, Navbar } from "@mantine/core";
 import PageHeader from "./PageHeader";
 import Nav from "./Nav";
+import { useMediaQuery } from "@mantine/hooks";
 
 export default function Layout({ children }) {
+  const sm = useMediaQuery("(max-width: 640px)");
   return (
     <AppShell
       padding="md"
-      navbar={<Nav />}
+      navbar={!sm && <Nav />}
       header={<PageHeader />}
       styles={(theme) => ({
         main: {

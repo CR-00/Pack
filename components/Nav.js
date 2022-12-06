@@ -13,6 +13,7 @@ import Link from "next/link";
 import { useRouter } from "next/router";
 import { useQuery } from "@tanstack/react-query";
 import api from "../lib/api";
+import NavLinks from "./NavLinks";
 
 const useStyles = createStyles(() => ({
   footer: {
@@ -20,41 +21,16 @@ const useStyles = createStyles(() => ({
   },
 }));
 
-const links = [
-  { icon: <IconMap2 />, href: "/", label: "Events" }
-];
-
-const NavLink = ({ label, href, icon }) => {
-  const router = useRouter();
-  return (
-    <Link href={href}>
-      <Tooltip label={label} position="right">
-        <Button variant={router.pathname === href ? "light" : "subtle"}>
-          {icon}
-        </Button>
-      </Tooltip>
-    </Link>
-  );
-};
 
 export default function Nav() {
   const { classes } = useStyles();
 
-  const { isError, isLoading, data } = useQuery(["me"], () => api.get("/user"));
+  const {  data } = useQuery(["me"], () => api.get("/user"));
 
   return (
     <Navbar width={{ base: 80 }} p="xs">
       <Navbar.Section>
-        <Stack spacing="xs">
-          {links.map((link, idx) => (
-            <NavLink
-              key={idx}
-              label={link.label}
-              href={link.href}
-              icon={link.icon}
-            />
-          ))}
-        </Stack>
+       <NavLinks/>
       </Navbar.Section>
       {data?.data?.user && (
         <Navbar.Section className={classes.footer}>
