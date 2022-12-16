@@ -8,6 +8,7 @@ import {
   Paper,
   createStyles,
   Drawer,
+  Divider,
 } from "@mantine/core";
 import { useSession } from "next-auth/react";
 import { Button } from "@mantine/core";
@@ -17,9 +18,10 @@ import Image from "next/image";
 import { useMediaQuery } from "@mantine/hooks";
 import { useState } from "react";
 import NavLinks from "./NavLinks";
+import SignIn from "./SignIn";
+import ProfileLink from "./ProfileLink";
 
 export default function PageHeader() {
-
   const { data: session } = useSession();
 
   const sm = useMediaQuery("(max-width: 640px)");
@@ -42,20 +44,14 @@ export default function PageHeader() {
                 width={56}
                 height={40}
                 alt="pack-logo"
-                src={
-                  "https://res.cloudinary.com/dkoyqu0ds/image/upload/v1667126070/pack/pack-logo_vhoutm.png"
-                }
+                src={process.env.BRAND_LOGO}
               />
             </Link>
             <Title>Pack</Title>
           </Group>
           <Group>
-            {!session && (
-              <Link href="/auth/signin" passHref legacyBehavior>
-                <Button component="a">Sign In</Button>
-              </Link>
-            )}
-            {session && <SignOut />}
+            {!session && !sm && <SignIn />}
+            {session && !sm && <SignOut />}
           </Group>
         </Group>
       </Header>
@@ -65,7 +61,12 @@ export default function PageHeader() {
         opened={burgerOpen}
         onClose={() => setBurgerOpen(false)}
       >
-        <NavLinks showLabels={true} closeSidebar={() => setBurgerOpen(false)} />
+        <ProfileLink showName={true} onClick={() => setBurgerOpen(false)} />
+        <Divider my="sm" />
+        <NavLinks showLabels={true} onClick={() => setBurgerOpen(false)} />
+        <Divider my="sm" sx={{ top: "300px" }} />
+        {session && <SignOut sx={{ width: "100%" }} />}
+        {!session && <SignIn sx={{ width: "100%" }} />}
       </Drawer>
     </>
   );

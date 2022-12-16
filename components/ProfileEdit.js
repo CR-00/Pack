@@ -95,7 +95,7 @@ export default function ProfileEdit() {
     });
     mutation.mutate(formData);
     if (shouldRedirectAfterSaving) {
-      window.location = "http://127.0.0.1:3000/";
+      window.location = process.env.CLIENT_URL;
     }
   };
 

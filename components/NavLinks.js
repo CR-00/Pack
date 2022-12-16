@@ -13,14 +13,14 @@ import { useRouter } from "next/router";
 
 const links = [{ icon: <IconMap2 />, href: "/", label: "Events" }];
 
-const NavLink = ({ label, href, icon, showLabels, closeSidebar }) => {
+const NavLink = ({ label, href, icon, showLabels, onClick }) => {
   const router = useRouter();
 
   const link = (
     <Link
       href={href}
       style={{ textDecoration: "none", color: "inherit" }}
-      onClick={closeSidebar}
+      onClick={onClick}
     >
       <Group position="left">
         {showLabels ? (
@@ -53,7 +53,7 @@ const NavLink = ({ label, href, icon, showLabels, closeSidebar }) => {
       sx={(theme) => ({
         padding: theme.spacing.xs,
         "&:hover": {
-          boxShadow: theme.shadows.md
+          boxShadow: theme.shadows.md,
         },
       })}
     >
@@ -62,14 +62,14 @@ const NavLink = ({ label, href, icon, showLabels, closeSidebar }) => {
   );
 };
 
-export default function NavLinks({ showLabels, closeSidebar }) {
+export default function NavLinks({ showLabels, onClick }) {
   return (
     <Stack spacing="xs">
       {links.map((link, idx) => (
         <NavLink
+          onClick={onClick}
           key={idx}
           showLabels={showLabels}
-          closeSidebar={closeSidebar}
           label={link.label}
           href={link.href}
           icon={link.icon}
