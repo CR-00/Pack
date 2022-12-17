@@ -19,6 +19,12 @@ function TextFields({ formSection }) {
   const formatValue = (e) => {
     let [k, v] = e;
     switch (k) {
+      case "visibility": {
+        return _.startCase(v.toLowerCase());
+      }
+      case "activity": {
+        return _.startCase(v.toLowerCase());
+      }
       case "start": {
         return formatDateString(v);
       }
@@ -57,6 +63,7 @@ function TextFields({ formSection }) {
 
 export default function NewEventSummary({ description, kit, route }) {
   let centerOfRoute = findCenter(route);
+
   return (
     <Container size="md">
       <Grid grow>
@@ -65,7 +72,7 @@ export default function NewEventSummary({ description, kit, route }) {
             <EventCard
               centerPoint={centerOfRoute}
               name={description.name}
-              description={description.description}
+              start={formatDateString(description.start)}
               difficulty={description.difficulty}
             />
           </Box>

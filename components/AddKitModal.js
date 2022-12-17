@@ -14,7 +14,7 @@ import KIT_LIST from "../lib/kitList";
 
 export default function AddKitModal({ opened, onClose }) {
   const router = useRouter();
-  const { eventId } = router.query;
+  const { id } = router.query;
 
   const [kitItem, setKitItem] = useState("");
   const [capacity, setCapacity] = useState(1);
@@ -22,14 +22,13 @@ export default function AddKitModal({ opened, onClose }) {
   const queryClient = useQueryClient();
   const mutation = useMutation(async () => {
     return await api
-      .put("/events/kit/items", {
+      .put(`/events/${id}/kit/items`, {
         kitItem,
-        capacity,
-        eventId: parseInt(eventId),
+        capacity
       })
       .then(() => {
         queryClient.invalidateQueries({
-            queryKey: ["kitItems", parseInt(eventId)]
+          queryKey: ["kitItems", id],
         });
         onClose();
       });

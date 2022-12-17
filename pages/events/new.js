@@ -1,6 +1,5 @@
 import {
   Button,
-  Container,
   Group,
   Paper,
   Space,
@@ -21,6 +20,7 @@ import {
 import NewEventSummary from "../../components/NewEventSummary";
 import { useMutation } from "@tanstack/react-query";
 import api from "../../lib/api";
+import { useMediaQuery } from "@mantine/hooks";
 
 const steps = [
   { description: "Description", Icon: IconNotebook },
@@ -32,8 +32,11 @@ const steps = [
 export default function NewEvent() {
   const [active, setActive] = useState(1);
 
+  const sm = useMediaQuery("(max-width: 600px)");
+
   const [eventDescription, setEventDescription] = useState({
     difficulty: 1,
+    visibility: "PUBLIC",
     activity: "hiking",
     name: "",
     start: "",
@@ -78,7 +81,7 @@ export default function NewEvent() {
 
   return (
     <Paper p="lg">
-      <Stepper radius="sm" size="sm" active={active}>
+      <Stepper radius="sm" size="sm" active={active} sx={{ display: sm ? "none": ""}}>
         {steps.map(({ description, Icon }, idx) => (
           <Stepper.Step
             key={idx}

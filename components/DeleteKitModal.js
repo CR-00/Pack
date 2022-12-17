@@ -5,13 +5,13 @@ import api from "../lib/api";
 
 export default function DeleteKitModal({ opened, onClose, item }) {
   const router = useRouter();
-  const { eventId } = router.query;
+  const { id } = router.query;
 
   const queryClient = useQueryClient();
   const mutation = useMutation(async () => {
-    return await api.delete(`/events/kit/items/${item.id}`).then(() => {
+    return await api.delete(`/events/${id}/kit/items/${item.id}`).then(() => {
       queryClient.invalidateQueries({
-        queryKey: ["kitItems", parseInt(eventId)],
+        queryKey: ["kitItems", id],
       });
       onClose();
     });

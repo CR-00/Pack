@@ -44,7 +44,7 @@ export default async (req, res) => {
       take: limit,
       skip: page * limit,
       where: {
-        description: filter,
+        description: { ...filter, visibility: { equals: "PUBLIC" } },
       },
       orderBy: {
         id: "asc",
@@ -76,7 +76,7 @@ export default async (req, res) => {
     }
 
     const { eventDescription, eventRoute, eventKit } = req.body;
-
+    
     const result = await prisma.event.create({
       data: {
         creator: {
@@ -85,7 +85,7 @@ export default async (req, res) => {
           },
         },
         description: {
-          create: eventDescription,
+          create: { ...eventDescription },
         },
         coordinates: {
           create: eventRoute,

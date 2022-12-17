@@ -5,7 +5,7 @@ export default function Profile() {
   return (
     <Grid>
       <Grid.Col span={4}>
-        <Paper p="xl">
+        <Paper p="xl" sx={{ minWidth: 350 }}>
           <Title order={2}>Profile</Title>
           <Divider my="sm" />
           <ProfileEdit />

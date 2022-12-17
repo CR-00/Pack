@@ -14,22 +14,21 @@ import KIT_LIST from "../lib/kitList";
 
 export default function EditKitModal({ item, opened, onClose }) {
   const router = useRouter();
-  const { eventId } = router.query;
+  const { id } = router.query;
 
   const [capacity, setCapacity] = useState(item.capacity);
 
   const queryClient = useQueryClient();
   const mutation = useMutation(async () => {
     return await api
-      .put("/events/kit/items", {
+      .put(`/events/${id}/kit/items`, {
         id: item.id,
         kitItem: item.name,
         capacity: capacity,
-        eventId: parseInt(eventId),
       })
       .then(() => {
         queryClient.invalidateQueries({
-          queryKey: ["kitItems", parseInt(eventId)]
+          queryKey: ["kitItems", id],
         });
         onClose();
       });

@@ -2,11 +2,9 @@ import {
   Avatar,
   Box,
   Container,
-  Divider,
   Group,
   Loader,
   Paper,
-  Stack,
   Tabs,
   Text,
   ThemeIcon,
@@ -40,16 +38,16 @@ const tabs = [
 
 export default function Event({ event, attendees }) {
   const { description, kitItems, creator, coordinates } = event;
-
+  
   const { data: attendeeData } = useQuery({
     queryKey: ["attendance", event.id],
-    queryFn: () => api.get(`/events/attendance/${event.id}`),
+    queryFn: () => api.get(`/events/${event.id}/attendance`),
     initialData: { data: attendees },
   });
 
   const { data: kitItemData } = useQuery({
     queryKey: ["kitItems", event.id],
-    queryFn: () => api.get(`/events/kit/${event.id}`),
+    queryFn: () => api.get(`/events/${event.id}/kit/items`),
     initialData: { data: kitItems },
   });
 
@@ -137,20 +135,18 @@ export async function getStaticPaths() {
   let events = await prisma.event.findMany();
   return {
     paths: events.map((event) => ({
-      params: { eventId: String(event.id) },
+      params: { id: event.id },
     })),
     fallback: "blocking",
   };
 }
 
 export async function getStaticProps(context) {
-  let { eventId } = context.params;
-
-  eventId = parseInt(eventId);
+  let { id } = context.params;
 
   const event = await prisma.event.findUnique({
     where: {
-      id: eventId,
+      id,
     },
     include: {
       description: true,
@@ -163,7 +159,7 @@ export async function getStaticProps(context) {
 
   const attendees = await prisma.eventAttendee.findMany({
     where: {
-      eventId,
+      eventId: event.id,
     },
     include: {
       user: true,

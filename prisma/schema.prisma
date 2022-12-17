@@ -59,7 +59,7 @@ model VerificationToken {
 }
 
 model Event {
-  id          Int               @id @default(autoincrement())
+  id          String            @id @default(cuid())
   creator     User              @relation(fields: [creatorId], references: [id], onDelete: Cascade)
   creatorId   String
   description EventDescription?
@@ -69,9 +69,10 @@ model Event {
 }
 
 model EventDescription {
-  id          Int    @id @default(autoincrement())
-  event       Event  @relation(fields: [eventId], references: [id], onDelete: Cascade)
-  eventId     Int    @unique
+  id          String          @id @default(cuid())
+  event       Event           @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  eventId     String          @unique
+  visibility  VisibilityLevel
   name        String
   description String
   difficulty  Int
@@ -80,18 +81,23 @@ model EventDescription {
   end         String
 }
 
+enum VisibilityLevel {
+  PUBLIC
+  UNLISTED
+}
+
 model Coordinate {
-  id      Int   @id @default(autoincrement())
-  event   Event @relation(fields: [eventId], references: [id], onDelete: Cascade)
-  eventId Int
+  id      String @id @default(cuid())
+  event   Event  @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  eventId String
   lat     Float
   lng     Float
 }
 
 model KitItem {
-  id       Int      @id @default(autoincrement())
+  id       String   @id @default(cuid())
   event    Event    @relation(fields: [eventId], references: [id], onDelete: Cascade)
-  eventId  Int
+  eventId  String
   owner    User     @relation(fields: [ownerId], references: [id], onDelete: Cascade)
   ownerId  String
   name     KitItems
@@ -105,7 +111,7 @@ enum KitItems {
 
 model EventAttendee {
   event   Event            @relation(fields: [eventId], references: [id], onDelete: Cascade)
-  eventId Int
+  eventId String
   user    User             @relation(fields: [userId], references: [id], onDelete: Cascade)
   userId  String
   status  AttendenceStatus

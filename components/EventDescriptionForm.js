@@ -2,24 +2,45 @@ import { Text, Select, Grid, TextInput, Rating } from "@mantine/core";
 import { Textarea } from "@mantine/core";
 import { DatePicker } from "@mantine/dates";
 
-export default function EventDescriptionForm({ eventDescription, setEventDescription }) {
+export default function EventDescriptionForm({
+  eventDescription,
+  setEventDescription,
+}) {
   return (
     <Grid justify="center" p="xl">
       <Grid.Col span={12}>
         <Text size="sm">Difficulty</Text>
-        <Rating 
-          color="dark" 
+        <Rating
+          color="dark"
           defaultValue={eventDescription.difficulty}
-          onChange={(v) => setEventDescription({ ...eventDescription, difficulty: v })}
+          onChange={(v) =>
+            setEventDescription({ ...eventDescription, difficulty: v })
+          }
         />
       </Grid.Col>
-      
+
+      <Grid.Col span={12}>
+        <Select
+          label="Visibility"
+          placeholder="Pick one"
+          defaultValue={eventDescription.visibility}
+          onChange={(v) =>
+            setEventDescription({ ...eventDescription, visibility: v })
+          }
+          data={[
+            { value: "PUBLIC", label: "Public" },
+            { value: "UNLISTED", label: "Unlisted" },
+          ]}
+        />
+      </Grid.Col>
       <Grid.Col span={12}>
         <Select
           label="Activity"
           placeholder="Pick one"
           value={eventDescription.activity}
-          onChange={(v) => setEventDescription({ ...eventDescription, activity: v })}
+          onChange={(v) =>
+            setEventDescription({ ...eventDescription, activity: v })
+          }
           data={[{ value: "hiking", label: "Hiking" }]}
         />
       </Grid.Col>
@@ -38,7 +59,9 @@ export default function EventDescriptionForm({ eventDescription, setEventDescrip
         <DatePicker
           dropdownType="modal"
           value={eventDescription.start}
-          onChange={(v) => setEventDescription({ ...eventDescription, start: v })}
+          onChange={(v) =>
+            setEventDescription({ ...eventDescription, start: v })
+          }
           placeholder="Pick date"
           label="Start date"
           withAsterisk
@@ -57,7 +80,12 @@ export default function EventDescriptionForm({ eventDescription, setEventDescrip
       <Grid.Col span={12}>
         <Textarea
           value={eventDescription.description}
-          onChange={(e) => setEventDescription({ ...eventDescription, description: e.currentTarget.value })}
+          onChange={(e) =>
+            setEventDescription({
+              ...eventDescription,
+              description: e.currentTarget.value,
+            })
+          }
           placeholder="Describe your event"
           label="Provide a brief description of your event"
           withAsterisk

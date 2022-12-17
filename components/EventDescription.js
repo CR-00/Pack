@@ -12,7 +12,7 @@ import {
   Flex,
   Rating,
 } from "@mantine/core";
-import { IconCalendarEvent, IconMoon } from "@tabler/icons";
+import { IconCalendarEvent, IconMoon, IconSun } from "@tabler/icons";
 import formatDateString from "../lib/formatDateString";
 import calcDaysBetween from "../lib/calcDaysBetween";
 

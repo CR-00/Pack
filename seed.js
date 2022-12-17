@@ -59,6 +59,7 @@ const dropAll = async () => {
   ]);
 };
 
+
 const seed = async () => {
   for (let i = 0; i < 100; i++) {
     await prisma.event
@@ -71,6 +72,7 @@ const seed = async () => {
           },
           description: {
             create: {
+              visibility: "PUBLIC",
               difficulty: Math.floor(1 + Math.random() * 4),
               activity: "hiking",
               name: "An Event",

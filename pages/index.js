@@ -49,8 +49,6 @@ export default function Home({ events }) {
     }
   }, [inView]);
 
-  console.log("in view", inView);
-
   const filterSearchResults = (page) => {
     let res = page.data.events.filter((e) =>
       e.description.name.toLowerCase().startsWith(search)
@@ -70,7 +68,7 @@ export default function Home({ events }) {
   return (
     <Paper p="md">
       <Flex
-        grow
+        grow={1}
         justify="space-between"
         gap="xl"
         basis="100%"
@@ -114,11 +112,8 @@ export default function Home({ events }) {
         gap="md"
         wrap="wrap"
         flex="1"
-        justify="center"
-        flexWrap="wrap"
-        minWidth="100%"
         basis="100%"
-        sx={(theme) => ({ paddingTop: theme.spacing.lg })}
+        justify="space-between"
       >
         {data?.pages.map((page) => {
           return filterSearchResults(page).map((event) => (
@@ -150,8 +145,13 @@ export default function Home({ events }) {
   );
 }
 
-export async function getStaticProps() {
+export async function getServerSideProps() {
   const events = await prisma.event.findMany({
+    where: {
+      description: {
+        visibility: { equals: "PUBLIC" }
+      }
+    },
     take: 10,
     orderBy: {
       id: "asc",

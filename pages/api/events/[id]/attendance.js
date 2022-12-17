@@ -1,7 +1,20 @@
-import prisma from "../../../lib/prisma";
-import { getSession } from "next-auth/react";
+import prisma from "../../../../lib/prisma";
 
-export default async (req, res) => {
+export default async function handler(req, res) {
+  const { id } = req.query;
+  if (req.method === "GET") {
+    const attendees = await prisma.eventAttendee.findMany({
+      where: {
+        eventId: {
+          equals: id,
+        },
+      },
+      include: {
+        user: true,
+      },
+    });
+    return res.status(200).send(attendees);
+  }
 
   if (req.method === "PUT") {
 
@@ -15,11 +28,11 @@ export default async (req, res) => {
             email: session.user.email
         }
     });
-
+    
     const upsertAttendance = await prisma.EventAttendee.upsert({
         where: {
             eventId_userId:{
-                eventId: parseInt(req.body.eventId),
+                eventId: req.body.id,
                 userId: user.id
             }
         },
@@ -35,7 +48,7 @@ export default async (req, res) => {
             },
             event: {
                 connect: {
-                    id: parseInt(req.body.eventId)
+                    id: req.body.id
                 }
             }
         },
@@ -43,4 +56,4 @@ export default async (req, res) => {
 
     return res.status(200).send(upsertAttendance);
   }
-};
+}

@@ -19,7 +19,7 @@ import EventSignupModal from "./EventSignupModal";
 
 export default function EventAttendees({ attendees }) {
   const router = useRouter();
-  const { eventId } = router.query;
+  const { id } = router.query;
 
   const [signUpOpen, setSignUpOpen] = useState(false);
 
@@ -33,7 +33,7 @@ export default function EventAttendees({ attendees }) {
   const mutation = useMutation(async (status) => {
     return await api.put("/events/attendance", {
       status,
-      eventId,
+      id,
     });
   });
 

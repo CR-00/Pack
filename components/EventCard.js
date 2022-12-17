@@ -6,6 +6,7 @@ import formatDateString from "../lib/formatDateString";
 import coordsToTilePng from "../lib/coordsToTilePng";
 
 export default function EventCard({ centerPoint, name, difficulty, start }) {
+  
   return (
     <Box
       sx={(theme) => ({
