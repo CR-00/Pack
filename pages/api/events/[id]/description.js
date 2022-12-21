@@ -1,5 +1,18 @@
 import { getSession } from "next-auth/react";
 import prisma from "../../../../lib/prisma";
+import Joi from "joi";
+
+
+export const descriptionSchema = Joi.object({
+  visibility: Joi.string().valid("PUBLIC", "PRIVATE").required(),
+  description: Joi.string().max(500).required(),
+  name: Joi.string().max(200).required(),
+  difficulty: Joi.number().min(1).max(5).required(),
+  activity: Joi.string().valid("HIKING").required(),
+  start: Joi.date().required(),
+  end: Joi.date().required(),
+});
+
 
 export default async function handler(req, res) {
 

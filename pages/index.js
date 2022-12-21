@@ -3,6 +3,7 @@ import {
   Center,
   Divider,
   Flex,
+  Grid,
   Loader,
   Paper,
   Text,
@@ -72,18 +73,9 @@ export default function Home({ events }) {
         justify="space-between"
         gap="xl"
         basis="100%"
-        direction={{ base: "column-reverse", xs: "row" }}
+        direction={{ base: "column", xs: "row" }}
       >
-        <Title
-          order={2}
-          sx={(theme) => ({
-            [`@media (max-width: ${theme.breakpoints.xs}px)`]: {
-              display: "none",
-            },
-          })}
-        >
-          Events
-        </Title>
+        <Title order={2}>Events</Title>
         <DateRangePicker
           placeholder="Pick date range"
           value={dateRange}
@@ -100,43 +92,31 @@ export default function Home({ events }) {
           <Button>Create</Button>
         </Link>
       </Flex>
-      <Divider
-        my="sm"
-        sx={(theme) => ({
-          [`@media (max-width: ${theme.breakpoints.xs}px)`]: {
-            display: "none",
-          },
-        })}
-      />
-      <Flex
-        gap="md"
-        wrap="wrap"
-        flex="1"
-        basis="100%"
-        justify="space-between"
-      >
+      <Divider my="sm" />
+      <Grid gutter="xs">
         {data?.pages.map((page) => {
           return filterSearchResults(page).map((event) => (
-            <Link
-              key={event.id}
-              href={`/events/${event.id}`}
-              prefetch={false}
-              style={{
-                textDecoration: "none",
-                color: "inherit",
-                flexGrow: 1,
-              }}
-            >
-              <EventCard
-                centerPoint={findCenter(event.coordinates)}
-                name={event.description.name}
-                start={event.description.start}
-                difficulty={event.description.difficulty}
-              />
-            </Link>
+            <Grid.Col key={event.id} xs={6} sm={4} lg={3} xl={2}>
+              <Link
+                href={`/events/${event.id}`}
+                prefetch={false}
+                style={{
+                  textDecoration: "none",
+                  color: "inherit",
+                  flexGrow: 1,
+                }}
+              >
+                <EventCard
+                  centerPoint={findCenter(event.coordinates)}
+                  name={event.description.name}
+                  start={event.description.start}
+                  difficulty={event.description.difficulty}
+                />
+              </Link>
+            </Grid.Col>
           ));
         })}
-      </Flex>
+      </Grid>
       <Center p="xl" ref={ref}>
         {isFetchingNextPage && <Loader />}
         {!isFetchingNextPage && <Text>No more events!</Text>}
@@ -149,8 +129,8 @@ export async function getServerSideProps() {
   const events = await prisma.event.findMany({
     where: {
       description: {
-        visibility: { equals: "PUBLIC" }
-      }
+        visibility: { equals: "PUBLIC" },
+      },
     },
     take: 10,
     orderBy: {

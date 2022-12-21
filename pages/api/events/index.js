@@ -1,5 +1,20 @@
 import prisma from "../../../lib/prisma";
 import { getSession } from "next-auth/react";
+import { descriptionSchema } from "./[id]/description";
+import { kitItemSchema } from "./[id]/kit/items";
+import Joi from "joi";
+
+const routeSchema = Joi.array().items(
+  Joi.object({
+    lat: Joi.number().required(),
+    lng: Joi.number().required(),
+  })
+);
+
+const bringingKitSchema = Joi.object({
+  bringingTent: Joi.boolean().required(),
+  tentSleeps: Joi.number().min(1).max(100).required(),
+});
 
 export const config = {
   api: {
@@ -8,9 +23,7 @@ export const config = {
 };
 
 export default async (req, res) => {
-  
   if (req.method === "GET") {
-
     let { page, start, end, search } = req.query;
 
     page = parseInt(page);
@@ -76,7 +89,22 @@ export default async (req, res) => {
     }
 
     const { eventDescription, eventRoute, eventKit } = req.body;
-    
+
+    const { error } = descriptionSchema.validate(eventDescription);
+    if (error) {
+      return res.status(400).send({ error: error.details[0].message });
+    }
+
+    const { error: routeError } = routeSchema.validate(eventRoute);
+    if (routeError) {
+      return res.status(400).send({ error: routeError.details[0].message });
+    }
+
+    const { error: kitError } = bringingKitSchema.validate(eventKit);
+    if (kitError) {
+      return res.status(400).send({ error: kitError.details[0].message });
+    }
+
     const result = await prisma.event.create({
       data: {
         creator: {

@@ -1,5 +1,11 @@
 import { getSession } from "next-auth/react";
 import prisma from "../../../../../lib/prisma";
+import Joi from "joi";
+
+export const kitItemSchema = Joi.object({
+  name: Joi.string().valid("TENT", "STOVE").required(),
+  capacity: Joi.number().min(1).max(100).optional(),
+});
 
 const itemsWithCapacityField = ["TENT"];
 
@@ -22,6 +28,11 @@ export default async function handler(req, res) {
     const session = await getSession({ req });
     if (!session) {
       return res.status(401).send({ error: "Not signed in." });
+    }
+
+    const { error } = kitItemSchema.validate(req.body);
+    if (error) {
+      return res.status(400).send({ error: error.details[0].message });
     }
 
     let create = {

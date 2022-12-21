@@ -37,7 +37,7 @@ export default function NewEvent() {
   const [eventDescription, setEventDescription] = useState({
     difficulty: 1,
     visibility: "PUBLIC",
-    activity: "hiking",
+    activity: "HIKING",
     name: "",
     start: new Date(),
     end: new Date(),

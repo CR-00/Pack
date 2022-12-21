@@ -31,7 +31,7 @@ export default function EventAttendees({ attendees }) {
   );
 
   const mutation = useMutation(async (status) => {
-    return await api.put("/events/attendance", {
+    return await api.put(`/events/${id}/attendance`, {
       status,
       id,
     });
