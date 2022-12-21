@@ -5,7 +5,18 @@ export default async function handler(req, res) {
 
   const { id } = req.query;
 
+  if (req.method === "GET") {
+    const desc = await prisma.eventDescription.findUnique({
+      where: {
+        eventId: id,
+      }
+    });
+
+    return res.status(200).send(desc);
+  }
+
   if (req.method === "PUT") {
+
     const session = await getSession({ req });
 
     if (!session) {

@@ -2,6 +2,7 @@ import Head from "next/head";
 import { SessionProvider } from "next-auth/react";
 import { MantineProvider } from "@mantine/core";
 import { RouterTransition } from "../components/RouterTransition";
+import { ReactQueryDevtools } from '@tanstack/react-query-devtools'
 import {
   QueryClient,
   QueryClientProvider,
@@ -37,6 +38,7 @@ export default function App({ Component, pageProps }) {
             <Component {...pageProps} />
           </Page>
         </MantineProvider>
+        <ReactQueryDevtools initialIsOpen={false} />
       </QueryClientProvider>
     </SessionProvider>
   );

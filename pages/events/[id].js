@@ -51,6 +51,13 @@ export default function Event({ event, attendees }) {
     initialData: { data: kitItems },
   });
 
+  const { data: eventDescription } = useQuery({
+    queryKey: ["description", event.id],
+    queryFn: () => api.get(`/events/${event.id}/description`),
+    initialData: { data: description },
+  });
+
+
   const { data: session } = useSession();
 
   // Preload this tab.
@@ -67,7 +74,7 @@ export default function Event({ event, attendees }) {
     <Container size="xl" p="xs">
       <Paper p="md">
         <Group p="md" position="apart" align="top">
-          <Title>{description.name}</Title>
+          <Title>{eventDescription.data.name}</Title>
           <Box sx={(theme) => ({ paddingRight: theme.spacing.xl })}>
             <Avatar src={creator.image} alt="event-creator-avatar" />
             <Text size="xs" align="center" weight={700}>
@@ -105,7 +112,7 @@ export default function Event({ event, attendees }) {
             )}
           </Tabs.List>
           <Tabs.Panel value="description" pt="xl">
-            <EventDescription description={description} />
+            <EventDescription event={event} eventDescription={eventDescription.data} />
           </Tabs.Panel>
           <Tabs.Panel value="route" pt="xl">
             <Map

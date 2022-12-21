@@ -39,8 +39,8 @@ export default function NewEvent() {
     visibility: "PUBLIC",
     activity: "hiking",
     name: "",
-    start: "",
-    end: "",
+    start: new Date(),
+    end: new Date(),
     description: "",
   });
 

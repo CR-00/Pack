@@ -1,6 +1,6 @@
 import { Text, Select, Grid, TextInput, Rating } from "@mantine/core";
 import { Textarea } from "@mantine/core";
-import { DatePicker } from "@mantine/dates";
+import { DateRangePicker } from "@mantine/dates";
 
 export default function EventDescriptionForm({
   eventDescription,
@@ -34,17 +34,6 @@ export default function EventDescriptionForm({
         />
       </Grid.Col>
       <Grid.Col span={12}>
-        <Select
-          label="Activity"
-          placeholder="Pick one"
-          value={eventDescription.activity}
-          onChange={(v) =>
-            setEventDescription({ ...eventDescription, activity: v })
-          }
-          data={[{ value: "hiking", label: "Hiking" }]}
-        />
-      </Grid.Col>
-      <Grid.Col span={12}>
         <TextInput
           value={eventDescription.name}
           onChange={(e) =>
@@ -56,24 +45,14 @@ export default function EventDescriptionForm({
         />
       </Grid.Col>
       <Grid.Col span={12}>
-        <DatePicker
+        <DateRangePicker
           dropdownType="modal"
-          value={eventDescription.start}
+          value={[new Date(eventDescription.start), new Date(eventDescription.end)]}
           onChange={(v) =>
-            setEventDescription({ ...eventDescription, start: v })
+            setEventDescription({ ...eventDescription, start: v[0], end: v[1] })
           }
           placeholder="Pick date"
           label="Start date"
-          withAsterisk
-        />
-      </Grid.Col>
-      <Grid.Col span={12}>
-        <DatePicker
-          dropdownType="modal"
-          value={eventDescription.end}
-          onChange={(v) => setEventDescription({ ...eventDescription, end: v })}
-          placeholder="Pick date"
-          label="End date"
           withAsterisk
         />
       </Grid.Col>
