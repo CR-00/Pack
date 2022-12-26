@@ -16,7 +16,13 @@ export default function ProfileLink({ showName = false, onClick }) {
     >
       <Group position="center">
         <Tooltip label="Profile" position="right">
-          <Avatar src={data?.data?.user?.image} alt="user-avatar" />
+          <Avatar
+           src={data?.data?.user?.image}
+           alt="user-avatar"
+           width={32}
+           height={32}
+           imageProps={{ width: 32, height: 32, display: "block" }}
+          />
         </Tooltip>
         {showName && <Text>{data?.data?.user?.name}</Text>}
       </Group>

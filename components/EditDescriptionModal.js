@@ -6,6 +6,7 @@ import {
   Stack,
   Rating,
   Text,
+  Textarea,
 } from "@mantine/core";
 import { DateRangePicker } from "@mantine/dates";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
@@ -62,7 +63,7 @@ export default function EditDescriptionModal({
           value={descCopy.name}
           onChange={(e) => setDescCopy({ ...descCopy, name: e.target.value })}
         />
-        <TextInput
+        <Textarea
           label="About"
           value={descCopy.description}
           onChange={(e) =>

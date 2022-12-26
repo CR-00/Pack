@@ -13,7 +13,7 @@ export default function MapPreview({ centerPoint }) {
         zoomControl={false}
         scrollWheelZoom={false}
         dragging={false}
-        style={{ height: "250px", minWidth: "350px", zIndex: "0", position: "relative" }}
+        style={{ height: "100vh", minWidth: "350px", zIndex: "0", position: "relative" }}
       >
         <TileLayer url={openStreetMapLayers["standard"]} />
       </MapContainer>

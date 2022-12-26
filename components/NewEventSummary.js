@@ -1,12 +1,4 @@
-import {
-  Box,
-  Container,
-  Grid,
-  Group,
-  Paper,
-  Stack,
-  Text,
-} from "@mantine/core";
+import { Box, Container, Grid, Group, Paper, Stack, Text } from "@mantine/core";
 import React from "react";
 import _ from "lodash";
 import findCenter from "../lib/findCentre";
@@ -67,19 +59,17 @@ export default function NewEventSummary({ description, kit, route }) {
   return (
     <Container size="md">
       <Grid grow>
-      <Grid span={4}>
-          <Box p="md">
-            <EventCard
-              centerPoint={centerOfRoute}
-              name={description.name}
-              start={formatDateString(description.start)}
-              difficulty={description.difficulty}
-            />
-          </Box>
-        </Grid>
         <Grid.Col span={6}>
           <Paper shadow="md" p="xl">
-            <Stack position="center" justify="center" p="md">
+            <Box p="md" sx={{ maxWidth: "400px", margin: "auto" }}>
+              <EventCard
+                centerPoint={centerOfRoute}
+                name={description.name}
+                start={formatDateString(description.start)}
+                difficulty={description.difficulty}
+              />
+            </Box>
+            <Stack position="center" justify="center" p="md" mt="xl">
               <Text>Description</Text>
               <TextFields formSection={description} />
               <Text>Kit</Text>

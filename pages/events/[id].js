@@ -24,10 +24,11 @@ import dynamic from "next/dynamic";
 import findCenter from "../../lib/findCentre";
 import KitSummary from "../../components/KitSummary";
 import EventAttendees from "../../components/EventAttendees";
-import { useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import api from "../../lib/api";
 import { useSession } from "next-auth/react";
 import { EventSettings } from "../../components/EventSettings";
+import { useRouter } from "next/router";
 
 const tabs = [
   { label: "description", Icon: IconNotebook },
@@ -70,6 +71,12 @@ export default function Event({ event, attendees }) {
     []
   );
 
+  const updateRouteMutation = useMutation(async (markers) => {
+    return await api.put(`/events/${event.id}/route`, markers)
+  });
+  
+  let userIsCreator = session?.user.id === event.creatorId;
+
   return (
     <Container size="xl" p="xs">
       <Paper p="md">
@@ -97,7 +104,7 @@ export default function Event({ event, attendees }) {
                 <Text transform="capitalize">{label}</Text>
               </Tabs.Tab>
             ))}
-            {session?.user.id === event.creatorId && (
+            {userIsCreator && (
               <Tabs.Tab
                 key="settings"
                 value="settings"
@@ -116,8 +123,11 @@ export default function Event({ event, attendees }) {
           </Tabs.Panel>
           <Tabs.Panel value="route" pt="xl">
             <Map
+              editable={userIsCreator}
               centerPoint={findCenter(coordinates)}
               eventRoute={coordinates}
+              eventRouteIsSaving={updateRouteMutation.isLoading}
+              setEventRoute={updateRouteMutation.mutate}
             />
           </Tabs.Panel>
           <Tabs.Panel value="kit" pt="xl">

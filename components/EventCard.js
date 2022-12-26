@@ -1,12 +1,16 @@
-import { Card, Text, Group, Rating, Loader, Box, Title } from "@mantine/core";
-import { IconCalendarEvent, IconUsers } from "@tabler/icons";
-import dynamic from "next/dynamic";
+import { Text, Rating, Box, Title } from "@mantine/core";
+import { IconCalendarEvent } from "@tabler/icons";
 import React from "react";
 import formatDateString from "../lib/formatDateString";
 import coordsToTilePng from "../lib/coordsToTilePng";
 
-export default function EventCard({ centerPoint, name, difficulty, start }) {
-  
+export default function EventCard({
+  centerPoint,
+  name,
+  difficulty,
+  start,
+  hoverAnimation = false,
+}) {
   return (
     <Box
       sx={(theme) => ({
@@ -18,8 +22,8 @@ export default function EventCard({ centerPoint, name, difficulty, start }) {
         overflow: "hidden",
         borderColor: theme.colors.dark[0],
         "&:hover": {
-          transform: "scale(1.03)",
-          boxShadow: theme.shadows.xl,
+          transform: hoverAnimation ? "scale(1.03)" : "none",
+          boxShadow: hoverAnimation ? theme.shadows.xl : "none",
         },
         background:
           "linear-gradient(180deg, rgba(0, 0, 0, 0) 0%, rgba(0, 0, 0, .85) 90%)",

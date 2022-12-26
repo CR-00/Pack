@@ -3,7 +3,7 @@ import prisma from "../../../../../lib/prisma";
 import Joi from "joi";
 
 export const kitItemSchema = Joi.object({
-  name: Joi.string().valid("TENT", "STOVE").required(),
+  kitItem: Joi.string().valid("TENT", "STOVE").required(),
   capacity: Joi.number().min(1).max(100).optional(),
 });
 

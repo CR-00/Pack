@@ -2,14 +2,9 @@ import prisma from "../../../lib/prisma";
 import { getSession } from "next-auth/react";
 import { descriptionSchema } from "./[id]/description";
 import { kitItemSchema } from "./[id]/kit/items";
+import { routeSchema } from "./[id]/route";
 import Joi from "joi";
 
-const routeSchema = Joi.array().items(
-  Joi.object({
-    lat: Joi.number().required(),
-    lng: Joi.number().required(),
-  })
-);
 
 const bringingKitSchema = Joi.object({
   bringingTent: Joi.boolean().required(),

@@ -29,11 +29,11 @@ export default function KitSummary({ kitItems, attendees }) {
   const rows = kitItems.map((item) => {
     const attendee = attendees.find((a) => a.userId === item.ownerId)?.user;
     const userOwnsItem = item.ownerId === session?.user.id;
-
+  
     return (
       <tr key={item.id}>
         <td>
-          <Text transform="capitalize">{item.name}</Text>
+          <Text transform="capitalize">{item.name.toLowerCase()}</Text>
         </td>
         <td>
           <Text>{item.capacity}</Text>
@@ -74,6 +74,14 @@ export default function KitSummary({ kitItems, attendees }) {
     );
   });
 
+  const empty = (
+    <tr>
+      <td colSpan="4">
+        <Text align="center" p="xl">No items found.</Text>
+      </td>
+    </tr>
+  );
+
   return (
     <>
       <EditKitModal
@@ -105,7 +113,7 @@ export default function KitSummary({ kitItems, attendees }) {
               <th></th>
             </tr>
           </thead>
-          <tbody>{rows}</tbody>
+          <tbody>{kitItems.length ? rows : empty}</tbody>
         </Table>
       </Container>
     </>

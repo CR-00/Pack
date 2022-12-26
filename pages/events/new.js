@@ -1,11 +1,4 @@
-import {
-  Button,
-  Group,
-  Paper,
-  Space,
-  Stepper,
-  ThemeIcon,
-} from "@mantine/core";
+import { Button, Group, Paper, Space, Stepper, ThemeIcon } from "@mantine/core";
 import { IconChevronLeft, IconChevronRight } from "@tabler/icons";
 import { useState } from "react";
 import EventDescriptionForm from "../../components/EventDescriptionForm";
@@ -21,6 +14,7 @@ import NewEventSummary from "../../components/NewEventSummary";
 import { useMutation } from "@tanstack/react-query";
 import api from "../../lib/api";
 import { useMediaQuery } from "@mantine/hooks";
+import Router from "next/router";
 
 const steps = [
   { description: "Description", Icon: IconNotebook },
@@ -51,12 +45,12 @@ export default function NewEvent() {
     tentSleeps: 1,
   });
 
-  const mutation = useMutation(async (formData) => {
+  const mutation = useMutation(async () => {
     return await api.post("/events", {
       eventDescription,
       eventRoute,
       eventKit,
-    });
+    }).then((res) => Router.push(`/events/${res.data.id}`));
   });
 
   const currentSectionIsValid = () => {
@@ -81,7 +75,12 @@ export default function NewEvent() {
 
   return (
     <Paper p="lg">
-      <Stepper radius="sm" size="sm" active={active} sx={{ display: sm ? "none": ""}}>
+      <Stepper
+        radius="sm"
+        size="sm"
+        active={active}
+        sx={{ display: sm ? "none" : "" }}
+      >
         {steps.map(({ description, Icon }, idx) => (
           <Stepper.Step
             key={idx}
@@ -102,7 +101,9 @@ export default function NewEvent() {
           setEventDescription={setEventDescription}
         />
       )}
-      {active === 2 && <RouteForm setEventRoute={setEventRoute} />}
+      {active === 2 && (
+        <RouteForm eventRoute={eventRoute} setEventRoute={setEventRoute} />
+      )}
       {active === 3 && <KitForm kit={eventKit} setEventKit={setEventKit} />}
       {active === 4 && (
         <NewEventSummary

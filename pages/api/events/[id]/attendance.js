@@ -33,7 +33,6 @@ export default async function handler(req, res) {
     }
     
     const { error } = attendanceSchema.validate(req.body);
-    console.log(error);
     if (error) {
       return res.status(400).send({ error: error.details[0].message });
     }

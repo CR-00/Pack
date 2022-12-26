@@ -36,12 +36,6 @@ export default async function handler(req, res) {
       return res.status(401).send({ error: "Not signed in." });
     }
 
-    const user = await prisma.user.findUnique({
-      where: {
-        email: session.user.email,
-      },
-    });
-
     const event = await prisma.event.findUnique({
       where: {
         id,
@@ -51,7 +45,7 @@ export default async function handler(req, res) {
       },
     });
 
-    if (user.id !== event.creatorId) {
+    if (session.user.id !== event.creatorId) {
       return res.status(401).send({ error: "Not authorized." });
     }
 
