@@ -1,16 +1,24 @@
 import prisma from "../../../../lib/prisma";
 import Joi from "joi";
 import { getSession } from "next-auth/react";
+import applyRateLimit from "../../../../lib/applyRateLimit";
 
 const attendanceSchema = Joi.object({
-  id: Joi.string().required(),
+  id: Joi.string().optional(),
   status: Joi.string().valid("DECLINED", "INTERESTED", "ACCEPTED").required(),
 });
 
 
 export default async function handler(req, res) {
+  
+  try {
+    await applyRateLimit(req, res)
+  } catch {
+    return res.status(429).send('Too many requests')
+  }
 
   const { id } = req.query;
+
   if (req.method === "GET") {
     const attendees = await prisma.eventAttendee.findMany({
       where: {
@@ -46,7 +54,7 @@ export default async function handler(req, res) {
     const upsertAttendance = await prisma.EventAttendee.upsert({
         where: {
             eventId_userId:{
-                eventId: req.body.id,
+                eventId: id,
                 userId: user.id
             }
         },
@@ -62,7 +70,7 @@ export default async function handler(req, res) {
             },
             event: {
                 connect: {
-                    id: req.body.id
+                    id
                 }
             }
         },

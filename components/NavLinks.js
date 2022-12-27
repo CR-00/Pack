@@ -51,9 +51,11 @@ const NavLink = ({ label, href, icon, showLabels, onClick }) => {
   ) : (
     <Box
       sx={(theme) => ({
-        padding: theme.spacing.xs,
+        paddingTop: theme.spacing.xs,
+        paddingBottom: theme.spacing.xs,
+        borderRadius: theme.radius.sm,
         "&:hover": {
-          boxShadow: theme.shadows.md,
+          backgroundColor: theme.colors.gray[2],
         },
       })}
     >

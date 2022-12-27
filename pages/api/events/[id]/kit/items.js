@@ -1,6 +1,7 @@
 import { getSession } from "next-auth/react";
 import prisma from "../../../../../lib/prisma";
 import Joi from "joi";
+import applyRateLimit from "../../../../../lib/applyRateLimit";
 
 export const kitItemSchema = Joi.object({
   kitItem: Joi.string().valid("TENT", "STOVE").required(),
@@ -10,6 +11,12 @@ export const kitItemSchema = Joi.object({
 const itemsWithCapacityField = ["TENT"];
 
 export default async function handler(req, res) {
+
+  try {
+    await applyRateLimit(req, res)
+  } catch {
+    return res.status(429).send('Too many requests')
+  }
 
   const { id } = req.query;
 

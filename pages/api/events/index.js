@@ -1,10 +1,9 @@
 import prisma from "../../../lib/prisma";
 import { getSession } from "next-auth/react";
 import { descriptionSchema } from "./[id]/description";
-import { kitItemSchema } from "./[id]/kit/items";
 import { routeSchema } from "./[id]/route";
 import Joi from "joi";
-
+import applyRateLimit from "../../../lib/applyRateLimit";
 
 const bringingKitSchema = Joi.object({
   bringingTent: Joi.boolean().required(),
@@ -18,6 +17,12 @@ export const config = {
 };
 
 export default async (req, res) => {
+  try {
+    await applyRateLimit(req, res);
+  } catch {
+    return res.status(429).send("Too many requests");
+  }
+
   if (req.method === "GET") {
     let { page, start, end, search } = req.query;
 
@@ -78,6 +83,7 @@ export default async (req, res) => {
   }
 
   if (req.method === "POST") {
+
     const session = await getSession({ req });
     if (!session) {
       res.status(401).send({ error: "Not signed in." });

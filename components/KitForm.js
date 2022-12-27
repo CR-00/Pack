@@ -13,7 +13,7 @@ export default function KitForm({ kit, setEventKit }) {
     <>
       <Title order={3}>Kit</Title>
       <Text>
-        Fill out what kit you'll be bringing so we can help allocate resources
+        Fill out what kit you&apos;ll be bringing so we can help allocate resources
         between other attendees.
       </Text>
       <Space h="xl" />

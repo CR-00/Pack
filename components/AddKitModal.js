@@ -24,7 +24,7 @@ export default function AddKitModal({ opened, onClose }) {
     return await api
       .put(`/events/${id}/kit/items`, {
         kitItem,
-        capacity
+        capacity,
       })
       .then(() => {
         queryClient.invalidateQueries({
@@ -54,7 +54,9 @@ export default function AddKitModal({ opened, onClose }) {
             withAsterisk
           />
         )}
-        <Button onClick={mutation.mutate}>SUBMIT</Button>
+        <Button onClick={mutation.mutate} loading={mutation.isLoading}>
+          SUBMIT
+        </Button>
       </Stack>
     </Modal>
   );

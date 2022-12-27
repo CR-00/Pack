@@ -15,6 +15,7 @@ import { useMutation } from "@tanstack/react-query";
 import api from "../../lib/api";
 import { useMediaQuery } from "@mantine/hooks";
 import Router from "next/router";
+import { getSession } from "next-auth/react";
 
 const steps = [
   { description: "Description", Icon: IconNotebook },
@@ -146,4 +147,20 @@ export default function NewEvent() {
       </Group>
     </Paper>
   );
+}
+
+export async function getServerSideProps(context) {
+  const session = await getSession(context);
+  if (session === null) {
+    return {
+      redirect: {
+        destination: "/auth/signin",
+        permanent: false,
+      },
+    };
+  }
+
+  return {
+    props: { session },
+  };
 }

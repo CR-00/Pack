@@ -14,7 +14,7 @@ import { useRouter } from "next/router";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import api from "../lib/api";
 
-export default function ProfileEdit() {
+export default function ProfileEdit({ userData }) {
   /*
    If someone is setting up their profile for the first time
    they should be redirected to the index page if the save is successful.
@@ -22,7 +22,11 @@ export default function ProfileEdit() {
   const router = useRouter();
   const shouldRedirectAfterSaving = router.pathname !== "/profile";
 
-  const { isError, isLoading, data } = useQuery(["me"], () => api.get("/user"));
+  const { isError, isLoading, data } = useQuery(
+    ["me"],
+    () => api.get("/user"),
+    userData
+  );
 
   const queryClient = useQueryClient();
 
@@ -95,7 +99,7 @@ export default function ProfileEdit() {
     });
     mutation.mutate(formData);
     if (shouldRedirectAfterSaving) {
-      window.location = process.env.CLIENT_URL;
+      window.location = process.env.NEXT_PUBLIC_CLIENT_URL;
     }
   };
 

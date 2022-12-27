@@ -28,7 +28,6 @@ import { useMutation, useQuery } from "@tanstack/react-query";
 import api from "../../lib/api";
 import { useSession } from "next-auth/react";
 import { EventSettings } from "../../components/EventSettings";
-import { useRouter } from "next/router";
 
 const tabs = [
   { label: "description", Icon: IconNotebook },
@@ -76,7 +75,7 @@ export default function Event({ event, attendees }) {
   });
   
   let userIsCreator = session?.user.id === event.creatorId;
-
+ 
   return (
     <Container size="xl" p="xs">
       <Paper p="md">
@@ -127,7 +126,7 @@ export default function Event({ event, attendees }) {
               centerPoint={findCenter(coordinates)}
               eventRoute={coordinates}
               eventRouteIsSaving={updateRouteMutation.isLoading}
-              setEventRoute={updateRouteMutation.mutate}
+              setEventRoute={(markers) => updateRouteMutation.mutate(markers)}
             />
           </Tabs.Panel>
           <Tabs.Panel value="kit" pt="xl">
@@ -176,7 +175,7 @@ export async function getStaticProps(context) {
 
   const attendees = await prisma.eventAttendee.findMany({
     where: {
-      eventId: event.id,
+      eventId: id,
     },
     include: {
       user: true,

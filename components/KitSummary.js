@@ -4,7 +4,6 @@ import {
   Button,
   Container,
   Group,
-  Modal,
   Table,
   Text,
 } from "@mantine/core";
@@ -24,7 +23,7 @@ export default function KitSummary({ kitItems, attendees }) {
   const [deleteItemOpen, setDeleteItemOpen] = useState(false);
 
   const usersAttendeeEntry =
-    session && attendees.find((a) => a.userId === session.user.id).user;
+    session && attendees.find((a) => a.userId === session.user.id)?.user;
 
   const rows = kitItems.map((item) => {
     const attendee = attendees.find((a) => a.userId === item.ownerId)?.user;

@@ -3,6 +3,7 @@ const { _ } = require("lodash");
 
 const prisma = new PrismaClient();
 
+
 function getRandomRoute() {
   // Bunch of random coordinates in the UK, 
   // 71% of the earths surface is water covered according to

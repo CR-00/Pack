@@ -89,6 +89,7 @@ export default function MapLayout({
   const [markers, setMarkers] = useState(eventRoute || []);
 
   useEffect(() => {
+    // TODO: stop this from firing for users who arent owners.
     // If its editable, save button controls this.
     if (setEventRoute && !editable) {
       setEventRoute(markers);
@@ -104,12 +105,14 @@ export default function MapLayout({
     <Stack>
       <Grid justify="left">
         <Grid.Col xs={12} md={9}>
+          <div style={{}}>
           <MapContainer
             center={center}
             zoom={5}
             maxZoom={10}
             style={{
               height: "100vh",
+              minHeight: "100%",
               zIndex: "0",
             }}
             whenReady={(e) => setMap(e.target)}
@@ -128,6 +131,7 @@ export default function MapLayout({
               setMarkers={setMarkers}
             />
           </MapContainer>
+          </div>
         </Grid.Col>
         <Grid.Col xs={12} md={3}>
           <MapInfo

@@ -6,6 +6,7 @@ import {
   Grid,
   Loader,
   Paper,
+  Skeleton,
   Text,
   TextInput,
   Title,
@@ -15,7 +16,6 @@ import { DateRangePicker, DateRangePickerValue } from "@mantine/dates";
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useInfiniteQuery } from "@tanstack/react-query";
-import prisma from "../lib/prisma";
 import EventCard from "../components/EventCard";
 import findCenter from "../lib/findCentre";
 import api from "../lib/api";
@@ -30,7 +30,7 @@ export default function Home({ events }) {
   const { data, fetchNextPage, hasNextPage, isFetchingNextPage } =
     useInfiniteQuery(
       ["events"],
-      async ({ pageParam = 1 }) => {
+      async ({ pageParam = 0 }) => {
         return await api.get(
           `/events?page=${pageParam}&search=${search}&start=${dateRange[0]}&end=${dateRange[1]}`
         );
@@ -39,8 +39,7 @@ export default function Home({ events }) {
         getNextPageParam: (page) => {
           return page.data.nextId ? page.data.nextId : false;
         },
-      },
-      { initialData: events }
+      }
     );
 
   const { ref, inView } = useInView();
@@ -94,6 +93,11 @@ export default function Home({ events }) {
       </Flex>
       <Divider my="sm" />
       <Grid gutter="xs">
+        {!data && [...Array(20)].map((_, idx) => (
+          <Grid.Col xs={6} sm={4} lg={3} xl={2} key={idx}>
+            <Skeleton height={250} radius="md" />
+          </Grid.Col>
+        ))}
         {data?.pages.map((page) => {
           return filterSearchResults(page).map((event) => (
             <Grid.Col key={event.id} xs={6} sm={4} lg={3} xl={2}>
@@ -107,6 +111,7 @@ export default function Home({ events }) {
                 }}
               >
                 <EventCard
+                  hoverAnimation={true}
                   centerPoint={findCenter(event.coordinates)}
                   name={event.description.name}
                   start={event.description.start}
@@ -126,26 +131,9 @@ export default function Home({ events }) {
 }
 
 export async function getServerSideProps() {
-  const events = await prisma.event.findMany({
-    where: {
-      description: {
-        visibility: { equals: "PUBLIC" },
-      },
-    },
-    take: 10,
-    orderBy: {
-      id: "asc",
-    },
-    include: {
-      description: true,
-      kitItems: true,
-      coordinates: true,
-    },
-  });
-
   return {
     props: {
-      events: [{ events }],
+      events: [{}],
       eventsParams: [null],
     },
   };

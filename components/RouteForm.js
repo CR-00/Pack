@@ -22,7 +22,7 @@ export default function RouteForm({ eventRoute, setEventRoute }) {
     <>
       <Title order={3}>Plan Your Route</Title>
       <Text>
-        You don't have to finish this now, but other users will find it helpful
+        You don&apos;t have to finish this now, but other users will find it helpful
         if you give a location for the event.
       </Text>
       <Space h="xl" />

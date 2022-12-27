@@ -4,6 +4,7 @@ import { v2 as cloudinary } from "cloudinary";
 import formidable from "formidable";
 import { promises as fs } from "fs";
 import path from "path";
+import applyRateLimit from "../../../lib/applyRateLimit";
 
 cloudinary.config({
   cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
@@ -35,6 +36,12 @@ export default async (req, res) => {
     return res.status(200).send({ user });
   }
   else if (req.method === "POST") {
+
+    try {
+      await applyRateLimit(req, res)
+    } catch {
+      return res.status(429).send('Too many requests')
+    }
 
     const data = await new Promise((resolve, reject) => {
       const form = new formidable.IncomingForm();

@@ -35,6 +35,7 @@ export default function EventCard({
         style={{
           width: "100%",
           zIndex: -1,
+          display: "block"
         }}
       />
       <Box

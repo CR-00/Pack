@@ -4,14 +4,11 @@ import {
   Title,
   Box,
   Burger,
-  Transition,
-  Paper,
-  createStyles,
   Drawer,
   Divider,
+  Loader,
 } from "@mantine/core";
 import { useSession } from "next-auth/react";
-import { Button } from "@mantine/core";
 import Link from "next/link";
 import SignOut from "./SignOut";
 import Image from "next/image";
@@ -22,7 +19,7 @@ import SignIn from "./SignIn";
 import ProfileLink from "./ProfileLink";
 
 export default function PageHeader() {
-  const { data: session } = useSession();
+  const { data: session, status: authStatus } = useSession();
 
   const sm = useMediaQuery("(max-width: 640px)");
   const [burgerOpen, setBurgerOpen] = useState(false);
@@ -44,7 +41,7 @@ export default function PageHeader() {
                 width={56}
                 height={40}
                 alt="pack-logo"
-                src={process.env.BRAND_LOGO}
+                src={process.env.NEXT_PUBLIC_BRAND_LOGO}
               />
             </Link>
             <Title>Pack</Title>
@@ -61,8 +58,13 @@ export default function PageHeader() {
         opened={burgerOpen}
         onClose={() => setBurgerOpen(false)}
       >
-        <ProfileLink showName={true} onClick={() => setBurgerOpen(false)} />
-        <Divider my="sm" />
+        {authStatus === "loading" && <Loader />}
+        {authStatus === "authenticated" && (
+          <>
+            <ProfileLink showName={true} onClick={() => setBurgerOpen(false)} />
+            <Divider my="sm" />
+          </>
+        )}
         <NavLinks showLabels={true} onClick={() => setBurgerOpen(false)} />
         <Divider my="sm" sx={{ top: "300px" }} />
         {session && <SignOut sx={{ width: "100%" }} />}

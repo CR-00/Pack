@@ -4,9 +4,10 @@ import Link from "next/link";
 import api from "../lib/api";
 
 export default function ProfileLink({ showName = false, onClick }) {
-  const { data, isLoading } = useQuery(["me"], () => api.get("/user"));
 
-  if (isLoading) return <Loader sx={{ margin: "auto" }} />;
+  const { data, isLoading, isError } = useQuery(["me"], () => api.get("/user"));
+
+  if (isLoading && isError) return <Loader sx={{ margin: "auto" }} />;
 
   return (
     <Link
