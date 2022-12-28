@@ -28,6 +28,8 @@ import { useMutation, useQuery } from "@tanstack/react-query";
 import api from "../../lib/api";
 import { useSession } from "next-auth/react";
 import { EventSettings } from "../../components/EventSettings";
+import CommentsSection from "../../components/CommentsSection";
+import PII from "../../lib/PII";
 
 const tabs = [
   { label: "description", Icon: IconNotebook },
@@ -36,7 +38,7 @@ const tabs = [
   { label: "attendees", Icon: IconUsers },
 ];
 
-export default function Event({ event, attendees }) {
+export default function Event({ event, attendees, comments }) {
   const { description, kitItems, creator, coordinates } = event;
   
   const { data: attendeeData } = useQuery({
@@ -142,6 +144,7 @@ export default function Event({ event, attendees }) {
             <EventSettings event={event} />
           </Tabs.Panel>
         </Tabs>
+        <CommentsSection comments={comments} userIsCreator={userIsCreator}/>
       </Paper>
     </Container>
   );
@@ -182,15 +185,52 @@ export async function getStaticProps(context) {
     },
   });
 
-  const PII = ["email", "emailVerified"];
-
   const attendeesMinusPII = attendees.map((attendee) => ({
     ...attendee,
     user: exclude(attendee.user, PII),
   }));
 
+  let comments = await prisma.comment.findMany({
+    where: {
+      eventId: id,
+      parentId: null,
+    },
+    include: {
+      author: true,
+      Children: {
+        include: {
+          author: true,
+          Children: {
+            include: {
+              author: true,
+              Children: {
+                include: {
+                  author: true,
+                },
+              },
+            },
+          },
+        },
+      },
+    },
+  });
+
+  // Recursively remove all PII from authors.
+  let excludePII = (comments) => {
+    let c = [...comments];
+    for (let comment of c) {
+      comment.author = exclude(comment.author, PII);
+      comment.createdAt = comment.createdAt.toISOString();
+      if (comment.Children) {
+        comment.Children = excludePII(comment.Children);
+      }
+    }
+    return c;
+  };
+
   return {
     props: {
+      comments: excludePII(comments),
       event: {
         ...event,
         creator: exclude(event.creator, PII),

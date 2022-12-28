@@ -8,7 +8,13 @@ import theme from "../lib/theme";
 import Page from "../components/Page";
 import "../styles/index.css";
 
-const queryClient = new QueryClient();
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      refetchOnWindowFocus: false,
+    },
+  },
+});
 
 export default function App({ Component, pageProps }) {
   return (

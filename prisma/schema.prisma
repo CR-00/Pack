@@ -47,6 +47,7 @@ model User {
   events          Event[]
   kitItems        KitItem[]
   eventAttendence EventAttendee[]
+  comments        Comment[]
 }
 
 model VerificationToken {
@@ -66,6 +67,7 @@ model Event {
   coordinates Coordinate[]
   kitItems    KitItem[]
   attendees   EventAttendee[]
+  comments    Comment[]
 }
 
 model EventDescription {
@@ -123,4 +125,17 @@ enum AttendenceStatus {
   DECLINED
   INTERESTED
   ACCEPTED
+}
+
+model Comment {
+  id        String    @id @default(cuid())
+  comment   String
+  author    User      @relation(fields: [authorId], references: [id], onDelete: Cascade)
+  authorId  String
+  event     Event     @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  eventId   String
+  Children  Comment[] @relation("Comment_Children")
+  parent    Comment?  @relation("Comment_Children", fields: [parentId], references: [id])
+  parentId  String?
+  createdAt DateTime  @default(now()) @db.Timestamptz(3)
 }
