@@ -106,6 +106,17 @@ export default async (req, res) => {
       return res.status(400).send({ error: kitError.details[0].message });
     }
 
+    const start = new Date(eventDescription.start);
+    const end = new Date(eventDescription.end);
+
+    if (start > end) {
+      return res.status(400).send({ error: "Start date must be before end date." });
+    }
+
+    if (start < new Date() - 1000 * 60 * 60 * 24) {
+      return res.status(400).send({ error: "Start date must be in the future." });
+    }
+
     const result = await prisma.event.create({
       data: {
         creator: {

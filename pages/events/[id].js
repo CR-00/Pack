@@ -10,7 +10,7 @@ import {
   ThemeIcon,
   Title,
 } from "@mantine/core";
-import React from "react";
+import React, { useMemo } from "react";
 import prisma, { exclude } from "../../lib/prisma";
 import {
   IconNotebook,
@@ -21,6 +21,7 @@ import {
 } from "@tabler/icons";
 import EventDescription from "../../components/EventDescription";
 import dynamic from "next/dynamic";
+import Head from "next/head";
 import findCenter from "../../lib/findCentre";
 import KitSummary from "../../components/KitSummary";
 import EventAttendees from "../../components/EventAttendees";
@@ -30,9 +31,10 @@ import { useSession } from "next-auth/react";
 import { EventSettings } from "../../components/EventSettings";
 import CommentsSection from "../../components/CommentsSection";
 import PII from "../../lib/PII";
+import coordsToTilePng from "../../lib/coordsToTilePng";
 
 const tabs = [
-  { label: "description", Icon: IconNotebook },
+  { label: "overview", Icon: IconNotebook },
   { label: "route", Icon: IconMapPin },
   { label: "kit", Icon: IconListDetails },
   { label: "attendees", Icon: IconUsers },
@@ -63,7 +65,7 @@ export default function Event({ event, attendees, comments }) {
   const { data: session } = useSession();
 
   // Preload this tab.
-  const Map = React.useMemo(
+  const Map = useMemo(
     () =>
       dynamic(() => import("../../components/Map"), {
         loading: () => <Loader />,
@@ -77,8 +79,16 @@ export default function Event({ event, attendees, comments }) {
   });
   
   let userIsCreator = session?.user.id === event.creatorId;
+  
+  const centerPoint = findCenter(coordinates);
  
   return (
+    <>
+    <Head>
+      <meta property="og:title" content={`Pack - ${eventDescription.data.name}`} /> 
+      <meta property="og:description" content={eventDescription.data.description} />
+      <meta property="og:image" content={coordsToTilePng(centerPoint.lat, centerPoint.lng, 12)} />
+    </Head>
     <Container size="xl" p="xs">
       <Paper p="md">
         <Group p="md" position="apart" align="top">
@@ -90,7 +100,7 @@ export default function Event({ event, attendees, comments }) {
             </Text>
           </Box>
         </Group>
-        <Tabs defaultValue="description">
+        <Tabs defaultValue="overview">
           <Tabs.List>
             {tabs.map(({ label, Icon }) => (
               <Tabs.Tab
@@ -119,13 +129,18 @@ export default function Event({ event, attendees, comments }) {
               </Tabs.Tab>
             )}
           </Tabs.List>
-          <Tabs.Panel value="description" pt="xl">
-            <EventDescription event={event} eventDescription={eventDescription.data} />
+          <Tabs.Panel value="overview" pt="xl">
+            <EventDescription
+              attendees={attendeeData.data}
+              event={event}
+              eventDescription={eventDescription.data}
+              centerPoint={centerPoint}
+            />
           </Tabs.Panel>
           <Tabs.Panel value="route" pt="xl">
             <Map
               editable={userIsCreator}
-              centerPoint={findCenter(coordinates)}
+              centerPoint={centerPoint}
               eventRoute={coordinates}
               eventRouteIsSaving={updateRouteMutation.isLoading}
               setEventRoute={(markers) => updateRouteMutation.mutate(markers)}
@@ -147,6 +162,7 @@ export default function Event({ event, attendees, comments }) {
         <CommentsSection comments={comments} userIsCreator={userIsCreator}/>
       </Paper>
     </Container>
+    </>
   );
 }
 

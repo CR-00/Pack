@@ -22,6 +22,8 @@ import "leaflet-routing-machine/dist/leaflet-routing-machine.css";
 import roundLatLng from "../lib/roundLatLng";
 import openStreetMapLayers from "../lib/openStreetMapLayers";
 import _ from "lodash";
+import { useRouter } from "next/router";
+import { QueryCache } from "@tanstack/react-query";
 
 function Route({ setCenter, setRoute, markers, setMarkers, editable = true }) {
   const map = useMap();
@@ -88,6 +90,15 @@ export default function MapLayout({
   const [route, setRoute] = useState(eventRoute || null);
   const [markers, setMarkers] = useState(eventRoute || []);
 
+  const queryCache = new QueryCache({
+    onError: (error) => {
+      console.log(error);
+    },
+    onSuccess: (data) => {
+      console.log(data);
+    },
+  });
+
   useEffect(() => {
     // TODO: stop this from firing for users who arent owners.
     // If its editable, save button controls this.
@@ -98,7 +109,7 @@ export default function MapLayout({
 
   // Stops the map from graying out, not sure why this happens.
   setTimeout(function () {
-    window.dispatchEvent(new Event('resize'));
+    window.dispatchEvent(new Event("resize"));
   }, 1000);
 
   return (
@@ -106,31 +117,31 @@ export default function MapLayout({
       <Grid justify="left">
         <Grid.Col xs={12} md={9}>
           <div style={{}}>
-          <MapContainer
-            center={center}
-            zoom={5}
-            maxZoom={10}
-            style={{
-              height: "100vh",
-              minHeight: "100%",
-              zIndex: "0",
-            }}
-            whenReady={(e) => setMap(e.target)}
-          >
-            {/* Key is little hack to force a rerender. */}
-            <TileLayer
-              key={Object.keys(openStreetMapLayers).indexOf(mapStyle)}
-              url={openStreetMapLayers[mapStyle]}
-            />
-            <Route
-              route={route}
-              editable={editable}
-              setRoute={setRoute}
-              setCenter={setCenter}
-              markers={markers}
-              setMarkers={setMarkers}
-            />
-          </MapContainer>
+            <MapContainer
+              scrollWheelZoom={false}
+              center={center}
+              zoom={5}
+              maxZoom={10}
+              style={{
+                height: "650px",
+                zIndex: "0",
+              }}
+              whenReady={(e) => setMap(e.target)}
+            >
+              {/* Key is little hack to force a rerender. */}
+              <TileLayer
+                key={Object.keys(openStreetMapLayers).indexOf(mapStyle)}
+                url={openStreetMapLayers[mapStyle]}
+              />
+              <Route
+                route={route}
+                editable={editable}
+                setRoute={setRoute}
+                setCenter={setCenter}
+                markers={markers}
+                setMarkers={setMarkers}
+              />
+            </MapContainer>
           </div>
         </Grid.Col>
         <Grid.Col xs={12} md={3}>
@@ -187,11 +198,15 @@ function MapInfo({
               <Text size="sm" align="middle">
                 {roundLatLng(marker.lat)}, {roundLatLng(marker.lng)}
               </Text>
-              <IconX
-                size={16}
-                style={{ cursor: "pointer", opacity: "0.3" }}
-                onClick={() => setMarkers(markers.filter((m) => m !== marker))}
-              />
+              {editable && (
+                <IconX
+                  size={16}
+                  style={{ cursor: "pointer", opacity: "0.3" }}
+                  onClick={() =>
+                    setMarkers(markers.filter((m) => m !== marker))
+                  }
+                />
+              )}
             </Group>
           ))
         )}

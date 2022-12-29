@@ -6,6 +6,7 @@ import BadWordsFilter from "bad-words";
 import { useSession } from "next-auth/react";
 import { useMemo, useState } from "react";
 import api from "../lib/api";
+import profileIsIncomplete from "../lib/profileIsIncomplete";
 
 var filter = new BadWordsFilter();
 

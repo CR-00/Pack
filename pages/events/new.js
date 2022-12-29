@@ -16,6 +16,9 @@ import api from "../../lib/api";
 import { useMediaQuery } from "@mantine/hooks";
 import Router from "next/router";
 import { getSession } from "next-auth/react";
+import BadWordsFilter from "bad-words";
+
+const filter = new BadWordsFilter();
 
 const steps = [
   { description: "Description", Icon: IconNotebook },
@@ -54,6 +57,9 @@ export default function NewEvent() {
     }).then((res) => Router.push(`/events/${res.data.id}`));
   });
 
+  const descriptionIsProfane = filter.isProfane(eventDescription.description);
+  const nameIsProfane = filter.isProfane(eventDescription.name);
+
   const currentSectionIsValid = () => {
     if (active === 1) {
       return (
@@ -63,7 +69,9 @@ export default function NewEvent() {
         eventDescription.name &&
         eventDescription.start &&
         eventDescription.end &&
-        eventDescription.description
+        eventDescription.description &&
+        !nameIsProfane &&
+        !descriptionIsProfane
       );
     } else if (active === 2) {
       return eventRoute.length;
@@ -100,6 +108,8 @@ export default function NewEvent() {
         <EventDescriptionForm
           eventDescription={eventDescription}
           setEventDescription={setEventDescription}
+          nameIsProfane={nameIsProfane}
+          descriptionIsProfane={descriptionIsProfane}
         />
       )}
       {active === 2 && (

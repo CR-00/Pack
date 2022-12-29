@@ -5,6 +5,8 @@ import { DateRangePicker } from "@mantine/dates";
 export default function EventDescriptionForm({
   eventDescription,
   setEventDescription,
+  nameIsProfane,
+  descriptionIsProfane,
 }) {
   return (
     <Grid justify="center" p="xl">
@@ -36,6 +38,7 @@ export default function EventDescriptionForm({
       <Grid.Col span={12}>
         <TextInput
           value={eventDescription.name}
+          error={nameIsProfane ? "Profanity is not allowed" : null}
           onChange={(e) =>
             setEventDescription({ ...eventDescription, name: e.target.value })
           }
@@ -59,6 +62,7 @@ export default function EventDescriptionForm({
       <Grid.Col span={12}>
         <Textarea
           value={eventDescription.description}
+          error={descriptionIsProfane ? "Profanity is not allowed" : null}
           onChange={(e) =>
             setEventDescription({
               ...eventDescription,

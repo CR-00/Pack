@@ -4,6 +4,7 @@ import Joi from "joi";
 import applyRateLimit from "../../../../../lib/applyRateLimit";
 
 export const kitItemSchema = Joi.object({
+  id: Joi.string().optional(),
   kitItem: Joi.string().valid("TENT", "STOVE").required(),
   capacity: Joi.number().min(1).max(100).optional(),
 });
@@ -11,26 +12,25 @@ export const kitItemSchema = Joi.object({
 const itemsWithCapacityField = ["TENT"];
 
 export default async function handler(req, res) {
-
   try {
-    await applyRateLimit(req, res)
+    await applyRateLimit(req, res);
   } catch {
-    return res.status(429).send('Too many requests')
+    return res.status(429).send("Too many requests");
   }
 
   const { id } = req.query;
 
   if (req.method === "GET") {
     const kitItems = await prisma.KitItem.findMany({
-        where: {
-          eventId: {
-            equals: id
-          }
-        }
-      });
+      where: {
+        eventId: {
+          equals: id,
+        },
+      },
+    });
     return res.status(200).send(kitItems);
   }
-  
+
   if (req.method === "PUT") {
     const session = await getSession({ req });
     if (!session) {
@@ -40,6 +40,21 @@ export default async function handler(req, res) {
     const { error } = kitItemSchema.validate(req.body);
     if (error) {
       return res.status(400).send({ error: error.details[0].message });
+    }
+
+    const attendingEvent = await prisma.EventAttendee.findUnique({
+      where: {
+        eventId_userId: {
+          eventId: id,
+          userId: session.user.id,
+        },
+      },
+    });
+
+    if (!attendingEvent) {
+      return res
+        .status(404)
+        .send({ error: "You must be attending an event to add an item." });
     }
 
     let create = {
@@ -62,7 +77,7 @@ export default async function handler(req, res) {
 
     const insertKitItem = await prisma.KitItem.upsert({
       where: {
-        id: req.body.id ? req.body.id : "n/a",  // No need for ID if inserting.
+        id: req.body.id ? req.body.id : "n/a", // No need for ID if inserting.
       },
       update: {
         capacity: req.body.capacity,
