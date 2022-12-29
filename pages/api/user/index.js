@@ -7,8 +7,7 @@ import BadWordsFilter from "bad-words";
 
 const userSchema = Joi.object({
   name: Joi.string().min(2).max(100).required(),
-  email: Joi.string().email().required(),
-  image: Joi.string().uri().required(),
+  email: Joi.string().email().required()
 });
 
 export default async (req, res) => {
@@ -42,8 +41,9 @@ export default async (req, res) => {
     }
 
     // Hash to protect name.
+    console.log(session);
     const hashedName = Crypto.createHash("sha256")
-      .update(session.user.name)
+      .update(req.body.name)
       .digest("hex");
 
     const img = `https://source.boringavatars.com/sunset/38/${hashedName}?colors=9DC9AC,FFFEC7,F56218,FF9D2E,919167`;

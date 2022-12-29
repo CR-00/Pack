@@ -44,7 +44,6 @@ export default function ProfileEdit({ userData }) {
     initialValues: {
       email: "",
       name: "",
-      image: null,
     },
     validate: {
       name: (val) => {
@@ -71,7 +70,6 @@ export default function ProfileEdit({ userData }) {
       form.setValues({
         email: data.data.user.email,
         name: data.data.user.name ? data.data.user.name : "",
-        image: data.data.user.image ? data.data.user.image : null,
       });
     }
   }, [data]);
@@ -104,7 +102,7 @@ export default function ProfileEdit({ userData }) {
       <Stack>
         <Center>
           <Tooltip label="Profile pictures are only customisable by using a third-party authentication method.">
-            <Avatar size="lg" src={form.values.image} />
+            <Avatar size="lg" src={data?.data?.user.image} />
           </Tooltip>
         </Center>
         <TextInput
