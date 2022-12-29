@@ -13,7 +13,7 @@ import { useSession } from "next-auth/react";
 import { useRouter } from "next/router";
 import { useMemo, useState } from "react";
 import api from "../lib/api";
-import profileIsIncomplete from "../lib/profileIsIncomplete";
+import useProfileIsIncomplete from "../lib/profileIsIncomplete";
 
 export default function EventSignupModal({ opened, onClose }) {
   const router = useRouter();
@@ -38,7 +38,7 @@ export default function EventSignupModal({ opened, onClose }) {
       });
   });
 
-  const profileNotComplete = profileIsIncomplete();
+  const profileNotComplete = useProfileIsIncomplete();
 
   if (!session.status === "authenticated") {
     router.push("/auth/login");

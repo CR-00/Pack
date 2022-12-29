@@ -6,7 +6,7 @@ import BadWordsFilter from "bad-words";
 import { useSession } from "next-auth/react";
 import { useMemo, useState } from "react";
 import api from "../lib/api";
-import profileIsIncomplete from "../lib/profileIsIncomplete";
+import useProfileIsIncomplete from "../lib/profileIsIncomplete";
 
 var filter = new BadWordsFilter();
 
@@ -49,7 +49,7 @@ export default function Comment({
   const userCanDelete =
     userIsCreator || session?.data?.user?.id === comment.author.id;
 
-  const postedAt = useMemo(() => {
+const postedAt = useMemo(() => {
     let date = new Date(comment.createdAt);
     return `${date.toLocaleDateString()} ${date.toLocaleTimeString()}`;
   }, [comment.createdAt]);
@@ -136,9 +136,8 @@ export default function Comment({
           </Box>
         )}
         {comment.Children?.map((c) => (
-          <Box ml="xl">
+          <Box ml="xl" key={c.id}>
             <Comment
-              key={c.id}
               comment={c}
               level={level + 1}
               setCommentToDelete={setCommentToDelete}
