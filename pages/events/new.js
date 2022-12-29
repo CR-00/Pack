@@ -17,6 +17,7 @@ import { useMediaQuery } from "@mantine/hooks";
 import Router from "next/router";
 import { getSession } from "next-auth/react";
 import BadWordsFilter from "bad-words";
+import getServerSession from "../../lib/getServerSession";
 
 const filter = new BadWordsFilter();
 
@@ -159,8 +160,8 @@ export default function NewEvent() {
   );
 }
 
-export async function getServerSideProps(context) {
-  const session = await getSession(context);
+export async function getServerSideProps(ctx) {
+  const session = await getServerSession(ctx.req, ctx.res);
   if (session === null) {
     return {
       redirect: {

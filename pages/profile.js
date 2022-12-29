@@ -4,15 +4,14 @@ import { useQuery } from "@tanstack/react-query";
 import { getSession } from "next-auth/react";
 import ProfileEdit from "../components/ProfileEdit";
 import api from "../lib/api";
+import getServerSession from "../lib/getServerSession";
 import useProfileIsIncomplete from "../lib/profileIsIncomplete";
 
 export default function Profile({ session }) {
-  const { data } = useQuery(
-    ["me"],
-    () => api.get("/user"),
-    { data: { session } }
-  );
-  
+  const { data } = useQuery(["me"], () => api.get("/user"), {
+    data: { session },
+  });
+
   const profileCompleted = useProfileIsIncomplete();
 
   return (
@@ -45,12 +44,11 @@ export default function Profile({ session }) {
 }
 
 export async function getServerSideProps(ctx) {
-  const session = await getSession(ctx);
-
+  const session = await getServerSession(ctx.req, ctx.res);
   if (session === null) {
     return {
       redirect: {
-        destination: "/login",
+        destination: "/auth/signin",
         permanent: false,
       },
     };

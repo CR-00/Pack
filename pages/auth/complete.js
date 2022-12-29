@@ -1,6 +1,6 @@
 import { Text, Center, Paper } from "@mantine/core";
-import { getSession } from "next-auth/react";
 import ProfileEdit from "../../components/ProfileEdit";
+import getServerSession from "../../lib/getServerSession";
 
 export default function CompleteProfile() {
   return (
@@ -14,7 +14,7 @@ export default function CompleteProfile() {
 }
 
 export async function getServerSideProps(context) {
-  const session = await getSession(context);
+  const session = await getServerSession(ctx.req, ctx.res);
   if (!session) {
     return {
       redirect: {
