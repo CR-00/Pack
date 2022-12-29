@@ -1,6 +1,6 @@
 import BadWordsFilter from "bad-words";
 import Joi from "joi";
-import { getSession } from "next-auth/react";
+import getServerSession from "../../../../lib/getServerSession";
 import applyRateLimit from "../../../../lib/applyRateLimit";
 import PII from "../../../../lib/PII";
 import prisma, { exclude } from "../../../../lib/prisma";
@@ -8,10 +8,7 @@ import prisma, { exclude } from "../../../../lib/prisma";
 const filter = new BadWordsFilter();
 
 const commentsSchema = Joi.object({
-  comment: Joi.string()
-    .required()
-    .min(1)
-    .max(1000),
+  comment: Joi.string().required().min(1).max(1000),
   parentId: Joi.string().optional().allow(null),
 });
 
@@ -68,7 +65,7 @@ export default async function handler(req, res) {
   }
 
   if (req.method === "POST") {
-    const session = await getSession({ req });
+    const session = await getServerSession(req, res);
     if (!session) {
       return res.status(401).send({ error: "Not signed in." });
     }

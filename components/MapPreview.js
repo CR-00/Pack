@@ -5,15 +5,15 @@ import "leaflet-defaulticon-compatibility/dist/leaflet-defaulticon-compatibility
 import "leaflet-defaulticon-compatibility";
 
 
-export default function MapPreview({ centerPoint, style }) {
+export default function MapPreview({ centerPoint, style, zoomable=false, dragging=false }) {
   return (
    
       <MapContainer
         center={centerPoint}
-        zoom={5}
-        zoomControl={false}
+        zoom={10}
+        zoomControl={zoomable}
         scrollWheelZoom={false}
-        dragging={false}
+        dragging={dragging}
         style={style}
       >
         <TileLayer url={openStreetMapLayers["standard"]} />

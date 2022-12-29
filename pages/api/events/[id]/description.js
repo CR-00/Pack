@@ -1,4 +1,4 @@
-import { getSession } from "next-auth/react";
+import getServerSession from "../../../../lib/getServerSession";
 import prisma from "../../../../lib/prisma";
 import Joi from "joi";
 import applyRateLimit from "../../../../lib/applyRateLimit";
@@ -38,8 +38,7 @@ export default async function handler(req, res) {
 
   if (req.method === "PUT") {
 
-    const session = await getSession({ req });
-
+    const session = await getServerSession(req, res);
     if (!session) {
       return res.status(401).send({ error: "Not signed in." });
     }

@@ -6,7 +6,7 @@ import prisma from "../../../lib/prisma";
 
 const authHandler = (req, res) => NextAuth(req, res, options);
 
-const options = {
+export const options = {
   providers: [
     DiscordProvider({
       clientId: process.env.DISCORD_CLIENT_ID,

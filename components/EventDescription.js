@@ -111,6 +111,8 @@ export default function EventDescription({
         })}
       >
         <MapPreview
+          zoomable={true}
+          dragging={true}
           centerPoint={centerPoint}
           style={{
             height: "600px",

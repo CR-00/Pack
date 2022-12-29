@@ -1,9 +1,10 @@
 import prisma from "../../../lib/prisma";
-import { getSession } from "next-auth/react";
 import Crypto from "crypto";
 import applyRateLimit from "../../../lib/applyRateLimit";
 import Joi from "joi";
 import BadWordsFilter from "bad-words";
+import getServerSession from "../../../lib/getServerSession";
+import { options } from "../auth/[...nextauth]";
 
 const userSchema = Joi.object({
   name: Joi.string().min(2).max(100).required(),
@@ -11,7 +12,7 @@ const userSchema = Joi.object({
 });
 
 export default async (req, res) => {
-  const session = await getSession({ req });
+  const session = await getServerSession(req, res);
   if (!session) {
     return res.status(401).send({ msg: "Not signed in." });
   }
@@ -41,7 +42,6 @@ export default async (req, res) => {
     }
 
     // Hash to protect name.
-    console.log(session);
     const hashedName = Crypto.createHash("sha256")
       .update(req.body.name)
       .digest("hex");

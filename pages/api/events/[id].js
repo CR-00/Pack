@@ -1,4 +1,4 @@
-import { getSession } from "next-auth/react";
+import getServerSession from "../../../lib/getServerSession";
 import applyRateLimit from "../../../lib/applyRateLimit";
 import prisma from "../../../lib/prisma";
 
@@ -12,7 +12,7 @@ export default async function handler(req, res) {
   const { id } = req.query;
 
   if (req.method === "DELETE") {
-    const session = await getSession({ req });
+    const session = await getServerSession(req, res);
     if (!session) {
       return res.status(401).send({ error: "Not signed in." });
     }

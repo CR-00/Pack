@@ -1,9 +1,11 @@
-import prisma from "../../../lib/prisma";
-import { getSession } from "next-auth/react";
+import prisma, { exclude } from "../../../lib/prisma";
+import getServerSession from "../../../lib/getServerSession";
 import { descriptionSchema } from "./[id]/description";
 import { routeSchema } from "./[id]/route";
 import Joi from "joi";
 import applyRateLimit from "../../../lib/applyRateLimit";
+import PII from "../../../lib/PII";
+
 
 const bringingKitSchema = Joi.object({
   bringingTent: Joi.boolean().required(),
@@ -74,6 +76,7 @@ export default async (req, res) => {
     // Update with attendee length.
     events.forEach((e) => {
       e.attendees = e.attendees.length;
+      e.creator = exclude(e.creator, PII);
     });
 
     res.json({
@@ -84,7 +87,7 @@ export default async (req, res) => {
 
   if (req.method === "POST") {
 
-    const session = await getSession({ req });
+    const session = await getServerSession(req, res);
     if (!session) {
       res.status(401).send({ error: "Not signed in." });
     }
