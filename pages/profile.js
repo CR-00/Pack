@@ -4,7 +4,7 @@ import { useQuery } from "@tanstack/react-query";
 import { getSession } from "next-auth/react";
 import ProfileEdit from "../components/ProfileEdit";
 import api from "../lib/api";
-import profileIsIncomplete from "../lib/profileIsIncomplete";
+import useProfileIsIncomplete from "../lib/profileIsIncomplete";
 
 export default function Profile({ session }) {
   const { data } = useQuery(
@@ -13,7 +13,7 @@ export default function Profile({ session }) {
     { data: { session } }
   );
   
-  const profileCompleted = profileIsIncomplete();
+  const profileCompleted = useProfileIsIncomplete();
 
   return (
     <>
