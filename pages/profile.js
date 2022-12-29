@@ -12,10 +12,12 @@ export default function Profile({ session }) {
     () => api.get("/user"),
     { data: { session } }
   );
+  
+  const profileCompleted = profileIsIncomplete();
 
   return (
     <>
-      {data && profileIsIncomplete() && (
+      {data && profileCompleted && (
         <Box pt="md" pb="md">
           <Alert
             color="orange"

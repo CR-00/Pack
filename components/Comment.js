@@ -31,8 +31,6 @@ export default function Comment({
           ? "Comment cannot be empty"
           : value.length >= 1000
           ? "Comment cannot be longer than 1000 characters"
-          : value === "[deleted]"
-          ? "Reserved expression"
           : null;
       },
     },
@@ -41,7 +39,6 @@ export default function Comment({
   const queryClient = useQueryClient();
   const addCommentMutation = useMutation(() =>
     api.post(`/events/${comment.eventId}/comments`, form.values).then(() => {
-      setReplyText("");
       setReplyOpen(false);
       queryClient.invalidateQueries(["comments", comment.eventId]);
     })
@@ -83,7 +80,7 @@ export default function Comment({
           </Group>
           {expanded && (
             <form>
-              <Text color={comment.comment === "[deleted]" ? "dimmed" : ""}>
+              <Text color={comment.deleted ? "dimmed" : ""}>
                 {comment.comment}
               </Text>
               <Group spacing="xs">

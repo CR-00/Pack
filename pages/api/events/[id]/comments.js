@@ -11,8 +11,7 @@ const commentsSchema = Joi.object({
   comment: Joi.string()
     .required()
     .min(1)
-    .max(1000)
-    .invalid("[deleted]"),
+    .max(1000),
   parentId: Joi.string().optional().allow(null),
 });
 

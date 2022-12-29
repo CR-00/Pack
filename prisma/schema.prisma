@@ -138,4 +138,5 @@ model Comment {
   parent    Comment?  @relation("Comment_Children", fields: [parentId], references: [id])
   parentId  String?
   createdAt DateTime  @default(now()) @db.Timestamptz(3)
+  deleted   Boolean   @default(false)
 }

@@ -23,8 +23,6 @@ export default function CommentsSection({ comments, userIsCreator }) {
           ? "Comment cannot be empty"
           : value.length >= 1000
           ? "Comment cannot be longer than 1000 characters"
-          : value === "[deleted]"
-          ? "Reserved expression"
           : null;
       },
     },
@@ -33,7 +31,7 @@ export default function CommentsSection({ comments, userIsCreator }) {
   const router = useRouter();
   const { id } = router.query;
 
-  const { data, isLoading } = useQuery({
+  const { data } = useQuery({
     queryKey: ["comments", id],
     queryFn: () => api.get(`/events/${id}/comments`),
     initialData: comments,
@@ -43,6 +41,7 @@ export default function CommentsSection({ comments, userIsCreator }) {
   const mutation = useMutation((comment) =>
     api.post(`/events/${id}/comments`, comment).then(() => {
       queryClient.invalidateQueries(["comments", id]);
+      form.reset();
     })
   );
 
@@ -76,8 +75,8 @@ export default function CommentsSection({ comments, userIsCreator }) {
         <form
           onSubmit={(e) => {
             e.preventDefault();
-            if(!form.validate().hasErrors) {
-                mutation.mutate(form.values);
+            if (!form.validate().hasErrors) {
+              mutation.mutate(form.values);
             }
           }}
         >
