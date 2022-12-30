@@ -102,7 +102,7 @@ export default function ProfileEdit({ userData }) {
       <Stack>
         <Center>
           <Tooltip label="Profile pictures are only customisable by using a third-party authentication method.">
-            <Avatar size="lg" src={data?.data?.user.image} />
+            <Avatar size="lg" src={data?.data?.user.image} alt="users profile picture"/>
           </Tooltip>
         </Center>
         <TextInput

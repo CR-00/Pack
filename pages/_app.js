@@ -27,6 +27,10 @@ export default function App({ Component, pageProps }) {
         <Head>
           <title>Pack</title>
           <meta
+            name="description"
+            content="Pack is an open-source platform for organising hikes and outdoor events."
+          />
+          <meta
             name="viewport"
             content="minimum-scale=1, initial-scale=1, width=device-width"
           />

@@ -32,7 +32,7 @@ export default function Profile({ session }) {
       )}
       <Grid>
         <Grid.Col span={4}>
-          <Paper p="xl" sx={{ minWidth: 350 }}>
+          <Paper p="xl" sx={{ minWidth: 350 }} withBorder>
             <Title order={2}>Profile</Title>
             <Divider my="sm" />
             <ProfileEdit userData={data} />

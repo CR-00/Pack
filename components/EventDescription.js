@@ -60,6 +60,7 @@ export default function EventDescription({
           onClick={() => setEditOpened(true)}
         >
           <IconEdit size={24} />
+          <span className="hidden">Edit Event Description</span>
         </ActionIcon>
       )}
       <Flex

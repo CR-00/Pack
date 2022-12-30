@@ -3,12 +3,15 @@ import { IconCalendarEvent } from "@tabler/icons";
 import React from "react";
 import formatDateString from "../lib/formatDateString";
 import coordsToTilePng from "../lib/coordsToTilePng";
+import Image from "next/image";
 
 export default function EventCard({
   centerPoint,
   name,
   difficulty,
   start,
+  height,
+  width,
   hoverAnimation = false,
 }) {
   return (
@@ -29,13 +32,13 @@ export default function EventCard({
           "linear-gradient(180deg, rgba(0, 0, 0, 0) 0%, rgba(0, 0, 0, .85) 90%)",
       })}
     >
-      <img
+      <Image
         src={coordsToTilePng(centerPoint.lat, centerPoint.lng, 12)}
         alt="OpenStreetMap Image"
+        width={width}
+        height={height}
         style={{
-          width: "100%",
           zIndex: -1,
-          display: "block"
         }}
       />
       <Box

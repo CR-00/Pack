@@ -2,3 +2,20 @@
 div .leaflet-routing-container-hide{ display: none; }
 
 .leaflet-control-attribution{ display: none; }
+
+.hidden {
+    clip: rect(1px, 1px, 1px, 1px);
+    height: 1px;
+    overflow: hidden;
+    position: absolute;
+    white-space: nowrap;
+    width: 1px;
+}
+
+.hidden:focus {
+    clip: auto;
+    height: auto;
+    overflow: auto;
+    position: absolute;
+    width: auto;
+}

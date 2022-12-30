@@ -33,13 +33,14 @@ const NavLink = ({ label, href, icon, showLabels, onClick }) => {
             })}
           >
             {icon}
+            <span className="hidden">{label}</span>
           </ThemeIcon>
         ) : (
           <Button variant={router.pathname === href ? "light" : "subtle"}>
             {icon}
+            <span className="hidden">{label}</span>
           </Button>
         )}
-
         {showLabels && <Text weight={700}>{label}</Text>}
       </Group>
     </Link>

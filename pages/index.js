@@ -6,13 +6,12 @@ import {
   Grid,
   Loader,
   Paper,
-  Skeleton,
   Text,
   TextInput,
   Title,
 } from "@mantine/core";
 import { IconSearch } from "@tabler/icons";
-import { DateRangePicker, DateRangePickerValue } from "@mantine/dates";
+import { DateRangePicker } from "@mantine/dates";
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useInfiniteQuery } from "@tanstack/react-query";
@@ -21,6 +20,9 @@ import findCenter from "../lib/findCentre";
 import api from "../lib/api";
 import { useInView } from "react-intersection-observer";
 import { useDebouncedState } from "@mantine/hooks";
+import prisma from "../lib/prisma";
+import PII from "../lib/PII";
+import { exclude } from "../lib/prisma";
 
 export default function Home({ events }) {
   // Start with dates unpicked.
@@ -39,7 +41,8 @@ export default function Home({ events }) {
         getNextPageParam: (page) => {
           return page.data.nextId ? page.data.nextId : false;
         },
-      }
+      },
+      { initialData: events }
     );
 
   const { ref, inView } = useInView();
@@ -93,11 +96,6 @@ export default function Home({ events }) {
       </Flex>
       <Divider my="sm" />
       <Grid gutter="xs">
-        {!data && [...Array(20)].map((_, idx) => (
-          <Grid.Col xs={6} sm={4} lg={3} xl={2} key={idx}>
-            <Skeleton height={250} radius="md" />
-          </Grid.Col>
-        ))}
         {data?.pages.map((page) => {
           return filterSearchResults(page).map((event) => (
             <Grid.Col key={event.id} xs={6} sm={4} lg={3} xl={2}>
@@ -111,6 +109,8 @@ export default function Home({ events }) {
                 }}
               >
                 <EventCard
+                  height={300}
+                  width={300}
                   hoverAnimation={true}
                   centerPoint={findCenter(event.coordinates)}
                   name={event.description.name}
@@ -124,17 +124,44 @@ export default function Home({ events }) {
       </Grid>
       <Center p="xl" ref={ref}>
         {isFetchingNextPage && <Loader />}
-        {!isFetchingNextPage && <Text>No more events!</Text>}
+        {!isFetchingNextPage && data?.pages.length && <Text>No more events!</Text>}
       </Center>
     </Paper>
   );
 }
 
-export async function getServerSideProps() {
+export async function getStaticProps() {
+  
+  const events = await prisma.event.findMany({
+    take: 20,
+    skip: 0,
+    where: {
+      description: { visibility: { equals: "PUBLIC" } },
+    },
+    orderBy: {
+      id: "asc",
+    },
+    include: {
+      description: true,
+      kitItems: true,
+      coordinates: true,
+      creator: true,
+      attendees: true,
+    },
+  });
+
+  // Update with attendee length.
+  events.forEach((e) => {
+    e.attendees = e.attendees.length;
+    e.creator = exclude(e.creator, PII);
+  });
+
+
   return {
     props: {
-      events: [{}],
+      events: [{ events }],
       eventsParams: [null],
     },
+    revalidate: 60,
   };
 }

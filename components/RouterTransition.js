@@ -24,5 +24,5 @@ export function RouterTransition() {
     };
   }, [router.asPath]);
 
-  return <NavigationProgress autoReset={true} />;
+  return <NavigationProgress autoReset={true} progressLabel="Loading Page"/>;
 }
