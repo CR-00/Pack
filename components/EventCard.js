@@ -35,12 +35,13 @@ export default function EventCard({
     >
       <Image
         fill
+        priority={true}
         src={coordsToTilePng(centerPoint.lat, centerPoint.lng, 12)}
         alt="OpenStreetMap Image"
         style={{
           zIndex: 0,
           filter: blur ? "blur(3px)" : "",
-          "-webkit-filter": blur ? "blur(3px)" : "",
+          WebkitFilter: blur ? "blur(3px)" : "",
         }}
       />
       <Box

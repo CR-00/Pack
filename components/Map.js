@@ -116,7 +116,7 @@ export default function MapLayout({
     <Stack>
       <Grid justify="left">
         <Grid.Col xs={12} md={9}>
-          <div style={{}}>
+          <div>
             <MapContainer
               scrollWheelZoom={false}
               center={center}
@@ -226,7 +226,6 @@ function MapInfo({
           { value: "standard", label: "Standard" },
           { value: "cycleosm", label: "CyclOSM" },
           { value: "opnvkarte", label: "ÖPNVKarte" },
-          { value: "humanitarian", label: "Humanitarian" },
         ]}
       />
       <Divider m="sm" />
@@ -260,7 +259,7 @@ function MapInfo({
           <>
             <Divider m="sm" />
             <Button
-              disabled={!changes}
+              disabled={!changes || !markers.length}
               loading={eventRouteIsSaving}
               onClick={() => setEventRoute(markers)}
             >

@@ -28,7 +28,7 @@ export default async (req, res) => {
   if (req.method === "GET") {
     let { page, start, end, search } = req.query;
 
-    page = parseInt(page);
+    page = parseInt(page) - 1;
 
     // No more results.
     if (isNaN(page)) {
@@ -55,8 +55,7 @@ export default async (req, res) => {
 
     const limit = 20;
 
-    const events = await prisma.event.findMany({
-      take: limit,
+    let events = await prisma.event.findMany({
       skip: page * limit,
       where: {
         description: { ...filter, visibility: { equals: "PUBLIC" } },
@@ -73,6 +72,11 @@ export default async (req, res) => {
       },
     });
 
+    // Add the number of events previously viewed to those remanining
+    // to get the total.
+    let numberOfEvents = limit * page + [...events].length;
+    events = events.slice(0, limit);
+    
     // Update with attendee length.
     events.forEach((e) => {
       e.attendees = e.attendees.length;
@@ -81,7 +85,7 @@ export default async (req, res) => {
 
     res.json({
       events,
-      nextId: events.length === limit ? page + 1 : undefined,
+      numberOfEvents
     });
   }
 

@@ -5,6 +5,7 @@ import {
   Flex,
   Grid,
   Loader,
+  Pagination,
   Paper,
   Text,
   TextInput,
@@ -14,59 +15,40 @@ import { IconSearch } from "@tabler/icons";
 import { DateRangePicker } from "@mantine/dates";
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { useInfiniteQuery } from "@tanstack/react-query";
+import { useQuery } from "@tanstack/react-query";
 import EventCard from "../components/EventCard";
 import findCenter from "../lib/findCentre";
 import api from "../lib/api";
-import { useInView } from "react-intersection-observer";
-import { useDebouncedState, useResizeObserver } from "@mantine/hooks";
+import { useDebouncedState, useScrollIntoView } from "@mantine/hooks";
 import prisma from "../lib/prisma";
 import PII from "../lib/PII";
 import { exclude } from "../lib/prisma";
+import paginationAriaLabel from "../lib/paginationAriaLabel";
 
-export default function Home({ events }) {
+
+export default function Home({ events, numberOfEvents }) {
   // Start with dates unpicked.
   const [dateRange, setDateRange] = useState([null, null]);
   const [search, setSearch] = useDebouncedState("", 200);
 
-  const { data, fetchNextPage, hasNextPage, isFetchingNextPage } =
-    useInfiniteQuery(
-      ["events"],
-      async ({ pageParam = 0 }) => {
-        return await api.get(
-          `/events?page=${pageParam}&search=${search}&start=${dateRange[0]}&end=${dateRange[1]}`
-        );
-      },
-      {
-        getNextPageParam: (page) => {
-          return page.data.nextId ? page.data.nextId : false;
-        },
-      },
-      { initialData: events }
-    );
+  const [page, setPage] = useState(1);
 
-  const { ref, inView } = useInView();
   useEffect(() => {
-    if (inView && hasNextPage) {
-      fetchNextPage();
-    }
-  }, [inView]);
+    setPage(1);
+  }, [dateRange, search]);
 
-  const filterSearchResults = (page) => {
-    let res = page.data.events.filter((e) =>
-      e.description.name.toLowerCase().startsWith(search)
+  const fetchEvents = async (page) => 
+    await api.get(
+      `/events?page=${page}&search=${search}&start=${dateRange[0]}&end=${dateRange[1]}`
     );
 
-    if (dateRange[0] && dateRange[1]) {
-      let start = Date.parse(dateRange[0]);
-      let end = Date.parse(dateRange[1]);
+  const { isLoading, data, isFetching } = useQuery({
+    queryKey: ["events", page, dateRange, search],
+    queryFn: () => fetchEvents(page),
+    keepPreviousData: true,
 
-      res = res
-        .filter((e) => Date.parse(e.description.start) >= start)
-        .filter((e) => Date.parse(e.description.end) <= end);
-    }
-    return res;
-  };
+    initialData: { data: { events } },
+  });
 
   return (
     <Paper p="md">
@@ -95,24 +77,27 @@ export default function Home({ events }) {
         </Link>
       </Flex>
       <Divider my="sm" />
+      {!data?.data.events.length && !isLoading && (
+        <Center mt="xl" mb="xl">
+          <Text align="center">No events found.</Text>
+        </Center>
+      )}
+      {isFetching && page !== 1 && (
+        <Center p="xl">
+          <Loader />
+        </Center>
+      )}
       <Grid gutter="xs">
-        {data?.pages.map((page) => {
-          return filterSearchResults(page).map((event) => (
-            <Grid.Col
-              key={event.id}
-              span={6}
-              xs={6}
-              sm={4}
-              lg={2}
-              xl={2}
-            >
+        {(!isFetching || page === 1) &&
+          data?.data.events.map((event) => (
+            <Grid.Col key={event.id} span={6} xs={6} sm={4} lg={2} xl={2}>
               <Link
                 href={`/events/${event.id}`}
                 prefetch={false}
                 style={{
                   textDecoration: "none",
                   color: "inherit",
-                  flexGrow: 1
+                  flexGrow: 1,
                 }}
               >
                 <EventCard
@@ -127,22 +112,27 @@ export default function Home({ events }) {
                 />
               </Link>
             </Grid.Col>
-          ));
-        })}
+          ))}
       </Grid>
-      <Center p="xl" ref={ref}>
-        {isFetchingNextPage && <Loader />}
-        {!isFetchingNextPage && data?.pages.length && (
-          <Text>No more events!</Text>
-        )}
-      </Center>
+      <Pagination
+        aria-label="my pagination component"
+        getItemAriaLabel={(p) => paginationAriaLabel(p)}
+        onChange={(p) => {
+          setPage(p);
+        }}
+        position="center"
+        radius="sm"
+        mt="xl"
+        withEdges
+        total={data?.data ? data.data.numberOfEvents / 20 : numberOfEvents / 20}
+        page={page}
+      />
     </Paper>
   );
 }
 
 export async function getStaticProps() {
-  const events = await prisma.event.findMany({
-    take: 20,
+  let events = await prisma.event.findMany({
     skip: 0,
     where: {
       description: { visibility: { equals: "PUBLIC" } },
@@ -159,6 +149,9 @@ export async function getStaticProps() {
     },
   });
 
+  let numberOfEvents = [...events].length;
+  events = events.slice(0, 20);
+
   // Update with attendee length.
   events.forEach((e) => {
     e.attendees = e.attendees.length;
@@ -167,8 +160,8 @@ export async function getStaticProps() {
 
   return {
     props: {
-      events: [{ events }],
-      eventsParams: [null],
+      events,
+      numberOfEvents
     },
     revalidate: 60,
   };
