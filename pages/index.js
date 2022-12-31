@@ -19,7 +19,7 @@ import EventCard from "../components/EventCard";
 import findCenter from "../lib/findCentre";
 import api from "../lib/api";
 import { useInView } from "react-intersection-observer";
-import { useDebouncedState } from "@mantine/hooks";
+import { useDebouncedState, useResizeObserver } from "@mantine/hooks";
 import prisma from "../lib/prisma";
 import PII from "../lib/PII";
 import { exclude } from "../lib/prisma";
@@ -98,19 +98,27 @@ export default function Home({ events }) {
       <Grid gutter="xs">
         {data?.pages.map((page) => {
           return filterSearchResults(page).map((event) => (
-            <Grid.Col key={event.id} xs={6} sm={4} lg={3} xl={2}>
+            <Grid.Col
+              key={event.id}
+              span={6}
+              xs={6}
+              sm={4}
+              lg={2}
+              xl={2}
+            >
               <Link
                 href={`/events/${event.id}`}
                 prefetch={false}
                 style={{
                   textDecoration: "none",
                   color: "inherit",
-                  flexGrow: 1,
+                  flexGrow: 1
                 }}
               >
                 <EventCard
-                  height={300}
-                  width={300}
+                  blur={true}
+                  height={250}
+                  width={250}
                   hoverAnimation={true}
                   centerPoint={findCenter(event.coordinates)}
                   name={event.description.name}
@@ -124,14 +132,15 @@ export default function Home({ events }) {
       </Grid>
       <Center p="xl" ref={ref}>
         {isFetchingNextPage && <Loader />}
-        {!isFetchingNextPage && data?.pages.length && <Text>No more events!</Text>}
+        {!isFetchingNextPage && data?.pages.length && (
+          <Text>No more events!</Text>
+        )}
       </Center>
     </Paper>
   );
 }
 
 export async function getStaticProps() {
-  
   const events = await prisma.event.findMany({
     take: 20,
     skip: 0,
@@ -155,7 +164,6 @@ export async function getStaticProps() {
     e.attendees = e.attendees.length;
     e.creator = exclude(e.creator, PII);
   });
-
 
   return {
     props: {

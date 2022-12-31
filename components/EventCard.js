@@ -11,7 +11,7 @@ export default function EventCard({
   difficulty,
   start,
   height,
-  width,
+  blur,
   hoverAnimation = false,
 }) {
   return (
@@ -28,17 +28,19 @@ export default function EventCard({
           transform: hoverAnimation ? "scale(1.03)" : "none",
           boxShadow: hoverAnimation ? theme.shadows.xl : "none",
         },
-        background:
-          "linear-gradient(180deg, rgba(0, 0, 0, 0) 0%, rgba(0, 0, 0, .85) 90%)",
+        height: height,
+        overflow: "hidden",
       })}
+      className="image-container"
     >
       <Image
+        fill
         src={coordsToTilePng(centerPoint.lat, centerPoint.lng, 12)}
         alt="OpenStreetMap Image"
-        width={width}
-        height={height}
         style={{
-          zIndex: -1,
+          zIndex: 0,
+          filter: blur ? "blur(3px)" : "",
+          "-webkit-filter": blur ? "blur(3px)" : "",
         }}
       />
       <Box

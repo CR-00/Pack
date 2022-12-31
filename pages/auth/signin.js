@@ -1,9 +1,10 @@
-import { getCsrfToken, getProviders, signIn } from "next-auth/react";
+import { signIn } from "next-auth/react";
 import { Center, Paper, Text, Divider, Stack, TextInput } from "@mantine/core";
 import DiscordButton from "../../components/buttons/DiscordButton";
 import EmailButton from "../../components/buttons/EmailButton";
 import { useForm } from "@mantine/form";
 import disposable from "disposable-email";
+
 
 export default function SignIn({ csrfToken }) {
   const form = useForm({

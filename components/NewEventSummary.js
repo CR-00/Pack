@@ -63,6 +63,8 @@ export default function NewEventSummary({ description, kit, route }) {
           <Paper shadow="md" p="xl">
             <Box p="md" sx={{ maxWidth: "400px", margin: "auto" }}>
               <EventCard
+                blur={false}
+                height={400}
                 centerPoint={centerOfRoute}
                 name={description.name}
                 start={formatDateString(description.start)}
