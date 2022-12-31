@@ -25,7 +25,6 @@ import PII from "../lib/PII";
 import { exclude } from "../lib/prisma";
 import paginationAriaLabel from "../lib/paginationAriaLabel";
 
-
 export default function Home({ events, numberOfEvents }) {
   // Start with dates unpicked.
   const [dateRange, setDateRange] = useState([null, null]);
@@ -37,7 +36,7 @@ export default function Home({ events, numberOfEvents }) {
     setPage(1);
   }, [dateRange, search]);
 
-  const fetchEvents = async (page) => 
+  const fetchEvents = async (page) =>
     await api.get(
       `/events?page=${page}&search=${search}&start=${dateRange[0]}&end=${dateRange[1]}`
     );
@@ -115,6 +114,7 @@ export default function Home({ events, numberOfEvents }) {
           ))}
       </Grid>
       <Pagination
+        disabled={isLoading || isFetching}
         aria-label="my pagination component"
         getItemAriaLabel={(p) => paginationAriaLabel(p)}
         onChange={(p) => {
@@ -124,7 +124,11 @@ export default function Home({ events, numberOfEvents }) {
         radius="sm"
         mt="xl"
         withEdges
-        total={data?.data ? data.data.numberOfEvents / 20 : numberOfEvents / 20}
+        total={
+          data?.data
+            ? Math.ceil(data.data.numberOfEvents / 20)
+            : Math.ceil(numberOfEvents / 20)
+        }
         page={page}
       />
     </Paper>
@@ -161,7 +165,7 @@ export async function getStaticProps() {
   return {
     props: {
       events,
-      numberOfEvents
+      numberOfEvents,
     },
     revalidate: 60,
   };
