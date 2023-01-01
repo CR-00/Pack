@@ -22,8 +22,7 @@ import "leaflet-routing-machine/dist/leaflet-routing-machine.css";
 import roundLatLng from "../lib/roundLatLng";
 import openStreetMapLayers from "../lib/openStreetMapLayers";
 import _ from "lodash";
-import { useRouter } from "next/router";
-import { QueryCache } from "@tanstack/react-query";
+
 
 function Route({ setCenter, setRoute, markers, setMarkers, editable = true }) {
   const map = useMap();
@@ -82,6 +81,7 @@ export default function MapLayout({
   eventRoute,
   setEventRoute,
   editable,
+  showInfo = true,
   eventRouteIsSaving = true,
 }) {
   const [map, setMap] = useState(null);
@@ -89,15 +89,6 @@ export default function MapLayout({
   const [mapStyle, setMapStyle] = useState("standard");
   const [route, setRoute] = useState(eventRoute || null);
   const [markers, setMarkers] = useState(eventRoute || []);
-
-  const queryCache = new QueryCache({
-    onError: (error) => {
-      console.log(error);
-    },
-    onSuccess: (data) => {
-      console.log(data);
-    },
-  });
 
   useEffect(() => {
     // TODO: stop this from firing for users who arent owners.
@@ -108,55 +99,55 @@ export default function MapLayout({
   }, [markers]);
 
   // Stops the map from graying out, not sure why this happens.
-  setTimeout(function () {
+  setTimeout(() => {
     window.dispatchEvent(new Event("resize"));
   }, 1000);
 
   return (
     <Stack>
-      <Grid justify="left">
-        <Grid.Col xs={12} md={9}>
-          <div>
-            <MapContainer
-              scrollWheelZoom={false}
-              center={center}
-              zoom={5}
-              maxZoom={10}
-              style={{
-                height: "650px",
-                zIndex: "0",
-              }}
-              whenReady={(e) => setMap(e.target)}
-            >
-              {/* Key is little hack to force a rerender. */}
-              <TileLayer
-                key={Object.keys(openStreetMapLayers).indexOf(mapStyle)}
-                url={openStreetMapLayers[mapStyle]}
-              />
-              <Route
-                route={route}
-                editable={editable}
-                setRoute={setRoute}
-                setCenter={setCenter}
-                markers={markers}
-                setMarkers={setMarkers}
-              />
-            </MapContainer>
-          </div>
+      <Grid justify={showInfo ? "left" : "center"}>
+        <Grid.Col xs={12} md={showInfo ? 9 : 12}>
+          <MapContainer
+            scrollWheelZoom={false}
+            center={center}
+            zoom={5}
+            maxZoom={10}
+            style={{
+              height: "650px",
+              zIndex: "0",
+            }}
+            whenReady={(e) => setMap(e.target)}
+          >
+            {/* Key is little hack to force a rerender. */}
+            <TileLayer
+              key={Object.keys(openStreetMapLayers).indexOf(mapStyle)}
+              url={openStreetMapLayers[mapStyle]}
+            />
+            <Route
+              route={route}
+              editable={editable}
+              setRoute={setRoute}
+              setCenter={setCenter}
+              markers={markers}
+              setMarkers={setMarkers}
+            />
+          </MapContainer>
         </Grid.Col>
-        <Grid.Col xs={12} md={3}>
-          <MapInfo
-            setEventRoute={setEventRoute}
-            eventRouteIsSaving={eventRouteIsSaving}
-            changes={!_.isEqual(markers, eventRoute)}
-            editable={editable}
-            map={map}
-            mapStyle={mapStyle}
-            markers={markers}
-            setMarkers={setMarkers}
-            setMapStyle={setMapStyle}
-          />
-        </Grid.Col>
+        {showInfo && (
+          <Grid.Col xs={12} md={3}>
+            <MapInfo
+              setEventRoute={setEventRoute}
+              eventRouteIsSaving={eventRouteIsSaving}
+              changes={!_.isEqual(markers, eventRoute)}
+              editable={editable}
+              map={map}
+              mapStyle={mapStyle}
+              markers={markers}
+              setMarkers={setMarkers}
+              setMapStyle={setMapStyle}
+            />
+          </Grid.Col>
+        )}
       </Grid>
     </Stack>
   );

@@ -89,7 +89,7 @@ export default function Home({ events, numberOfEvents }) {
       <Grid gutter="xs">
         {(!isFetching || page === 1) &&
           data?.data.events.map((event) => (
-            <Grid.Col key={event.id} span={6} xs={6} sm={4} lg={2} xl={2}>
+            <Grid.Col key={event.id} span={12} xs={6} sm={4} lg={2} xl={2}>
               <Link
                 href={`/events/${event.id}`}
                 prefetch={false}

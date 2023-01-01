@@ -1,4 +1,4 @@
-import { Loader, Space, Text, Title } from "@mantine/core";
+import { Box, Loader, Space, Text, Title } from "@mantine/core";
 import dynamic from "next/dynamic";
 import React, { useState } from "react";
 import findCenter from "../lib/findCentre";
@@ -19,7 +19,7 @@ export default function RouteForm({ eventRoute, setEventRoute }) {
     []
   );
   return (
-    <>
+    <Box ml="lg" mr="lg">
       <Title order={3}>Plan Your Route</Title>
       <Text>
         You don&apos;t have to finish this now, but other users will find it helpful
@@ -32,6 +32,6 @@ export default function RouteForm({ eventRoute, setEventRoute }) {
         setEventRoute={setEventRoute}
         styles={{ maxHeight: "400px" }}
       />
-    </>
+    </Box>
   );
 }

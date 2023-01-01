@@ -54,7 +54,7 @@ export default function CommentsSection({ comments, userIsCreator }) {
   );
 
   return (
-    <>
+    <Box pl="lg" pr="lg">
       <Modal
         opened={commentToDelete}
         onClose={() => setCommentToDelete(null)}
@@ -80,10 +80,10 @@ export default function CommentsSection({ comments, userIsCreator }) {
             }
           }}
         >
-          <Title order={2} pt="sm" pb="sm">
+          <Title order={2} mt="sm" mb="sm">
             Comments
           </Title>
-          <Box pb="xl">
+          <Box>
             {data?.data?.map((comment) => (
               <Comment
                 key={comment.id}
@@ -110,6 +110,6 @@ export default function CommentsSection({ comments, userIsCreator }) {
           </Button>
         </form>
       </Box>
-    </>
+    </Box>
   );
 }

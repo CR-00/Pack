@@ -5,6 +5,9 @@ import applyRateLimit from "../../../../../lib/applyRateLimit";
 
 export const kitItemSchema = Joi.object({
   id: Joi.string().optional(),
+  eventId: Joi.string().optional(),
+  ownerId: Joi.string().optional(),
+  name: Joi.string().optional(),
   kitItem: Joi.string().valid("TENT", "STOVE").required(),
   capacity: Joi.number().min(1).max(100).optional(),
 });

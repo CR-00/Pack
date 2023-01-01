@@ -41,8 +41,11 @@ const tabs = [
 ];
 
 export default function Event({ event, attendees, comments }) {
+
+  const [tab, setTab] = React.useState("overview");
+
   const { description, kitItems, creator, coordinates } = event;
-  
+
   const { data: attendeeData } = useQuery({
     queryKey: ["attendance", event.id],
     queryFn: () => api.get(`/events/${event.id}/attendance`),
@@ -61,7 +64,6 @@ export default function Event({ event, attendees, comments }) {
     initialData: { data: description },
   });
 
-
   const { data: session } = useSession();
 
   // Preload this tab.
@@ -75,93 +77,114 @@ export default function Event({ event, attendees, comments }) {
   );
 
   const updateRouteMutation = useMutation(async (markers) => {
-    return await api.put(`/events/${event.id}/route`, markers)
+    return await api.put(`/events/${event.id}/route`, markers);
   });
-  
+
   let userIsCreator = session?.user.id === event.creatorId;
-  
+
   const centerPoint = findCenter(coordinates);
- 
+
   return (
     <>
-    <Head>
-      <meta property="og:title" content={`Pack - ${eventDescription.data.name}`} /> 
-      <meta property="og:description" content={eventDescription.data.description} />
-      <meta property="og:image" content={coordsToTilePng(centerPoint.lat, centerPoint.lng, 12)} />
-    </Head>
-    <Container size="xl" p="xs">
-      <Paper p="md">
-        <Group p="md" position="apart" align="top">
-          <Title>{eventDescription.data.name}</Title>
-          <Box sx={(theme) => ({ paddingRight: theme.spacing.xl })}>
-            <Avatar src={creator.image} alt="event-creator-avatar" />
-            <Text size="xs" align="center" weight={700}>
-              {creator.name}
-            </Text>
-          </Box>
-        </Group>
-        <Tabs defaultValue="overview">
-          <Tabs.List>
-            {tabs.map(({ label, Icon }) => (
-              <Tabs.Tab
-                key={label}
-                value={label}
-                icon={
-                  <ThemeIcon>
-                    <Icon size={18} />
-                  </ThemeIcon>
-                }
-              >
-                <Text transform="capitalize">{label}</Text>
-              </Tabs.Tab>
-            ))}
-            {userIsCreator && (
-              <Tabs.Tab
-                key="settings"
-                value="settings"
-                icon={
-                  <ThemeIcon>
-                    <IconSettings size={18} />
-                  </ThemeIcon>
-                }
-              >
-                <Text>Settings</Text>
-              </Tabs.Tab>
-            )}
-          </Tabs.List>
-          <Tabs.Panel value="overview" pt="xl">
-            <EventDescription
-              attendees={attendeeData.data}
-              event={event}
-              eventDescription={eventDescription.data}
-              centerPoint={centerPoint}
-            />
-          </Tabs.Panel>
-          <Tabs.Panel value="route" pt="xl">
-            <Map
-              editable={userIsCreator}
-              centerPoint={centerPoint}
-              eventRoute={coordinates}
-              eventRouteIsSaving={updateRouteMutation.isLoading}
-              setEventRoute={(markers) => updateRouteMutation.mutate(markers)}
-            />
-          </Tabs.Panel>
-          <Tabs.Panel value="kit" pt="xl">
-            <KitSummary
-              kitItems={kitItemData.data}
-              attendees={attendeeData.data}
-            />
-          </Tabs.Panel>
-          <Tabs.Panel value="attendees" pt="xl">
-            <EventAttendees attendees={attendeeData.data} />
-          </Tabs.Panel>
-          <Tabs.Panel value="settings" pt="xl">
-            <EventSettings event={event} />
-          </Tabs.Panel>
-        </Tabs>
-        <CommentsSection comments={comments} userIsCreator={userIsCreator}/>
-      </Paper>
-    </Container>
+      <Head>
+        <meta
+          property="og:title"
+          content={`Pack - ${eventDescription.data.name}`}
+        />
+        <meta
+          property="og:description"
+          content={eventDescription.data.description}
+        />
+        <meta
+          property="og:image"
+          content={coordsToTilePng(centerPoint.lat, centerPoint.lng, 7)}
+        />
+      </Head>
+      <Container size="lg" p="xs">
+        <Paper p="md">
+          <Group p="md" position="apart" align="top">
+            <Title>{eventDescription.data.name}</Title>
+            <Box sx={(theme) => ({ paddingRight: theme.spacing.xl })}>
+              <Avatar src={creator.image} alt="event-creator-avatar" />
+              <Text size="xs" align="center" weight={700}>
+                {creator.name}
+              </Text>
+            </Box>
+          </Group>
+          <Tabs value={tab}>
+            <Tabs.List>
+              {tabs.map(({ label, Icon }) => (
+                <Tabs.Tab
+                  onClick={() => setTab(label)}
+                  key={label}
+                  value={label}
+                  icon={
+                    <ThemeIcon>
+                      <Icon size={18} />
+                    </ThemeIcon>
+                  }
+                >
+                  <Text transform="capitalize">{label}</Text>
+                </Tabs.Tab>
+              ))}
+              {userIsCreator && (
+                <Tabs.Tab
+                  onClick={() => setTab("settings")}
+                  key="settings"
+                  value="settings"
+                  icon={
+                    <ThemeIcon>
+                      <IconSettings size={18} />
+                    </ThemeIcon>
+                  }
+                >
+                  <Text>Settings</Text>
+                </Tabs.Tab>
+              )}
+            </Tabs.List>
+            <Tabs.Panel value="overview" pt="xl">
+              <EventDescription
+                attendees={attendeeData.data}
+                event={event}
+                eventDescription={eventDescription.data}
+                centerPoint={centerPoint}
+              />
+            </Tabs.Panel>
+            <Tabs.Panel
+              value="route"
+              pt="xl"
+              sx={(theme) => ({
+                marginLeft: 2 * theme.spacing.xl,
+                marginRight: 2 * theme.spacing.xl,
+              })}
+            >
+              <Map
+                showInfo={true}
+                editable={userIsCreator}
+                centerPoint={centerPoint}
+                eventRoute={coordinates}
+                eventRouteIsSaving={updateRouteMutation.isLoading}
+                setEventRoute={(markers) => updateRouteMutation.mutate(markers)}
+              />
+            </Tabs.Panel>
+            <Tabs.Panel value="kit" pt="xl">
+              <KitSummary
+                kitItems={kitItemData.data}
+                attendees={attendeeData.data}
+              />
+            </Tabs.Panel>
+            <Tabs.Panel value="attendees" pt="xl">
+              <EventAttendees attendees={attendeeData.data} />
+            </Tabs.Panel>
+            <Tabs.Panel value="settings" pt="xl">
+              <EventSettings event={event} />
+            </Tabs.Panel>
+          </Tabs>
+          {tab !== "settings" && (
+            <CommentsSection comments={comments} userIsCreator={userIsCreator} />
+          )}
+        </Paper>
+      </Container>
     </>
   );
 }

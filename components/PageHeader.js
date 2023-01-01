@@ -48,7 +48,7 @@ export default function PageHeader() {
           </Group>
           <Group>
             {!session && !sm && <SignIn />}
-            {session && !sm && <SignOut />}
+            {session && !sm && <SignOut color="red.6"/>}
           </Group>
         </Group>
       </Header>
@@ -67,7 +67,7 @@ export default function PageHeader() {
         )}
         <NavLinks showLabels={true} onClick={() => setBurgerOpen(false)} />
         <Divider my="sm" sx={{ top: "300px" }} />
-        {session && <SignOut sx={{ width: "100%" }} />}
+        {session && <SignOut sx={{ width: "100%" }} color="red.6"/>}
         {!session && <SignIn sx={{ width: "100%" }} />}
       </Drawer>
     </>

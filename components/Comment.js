@@ -49,7 +49,7 @@ export default function Comment({
   const userCanDelete =
     userIsCreator || session?.data?.user?.id === comment.author.id;
 
-const postedAt = useMemo(() => {
+  const postedAt = useMemo(() => {
     let date = new Date(comment.createdAt);
     return `${date.toLocaleDateString()} ${date.toLocaleTimeString()}`;
   }, [comment.createdAt]);
@@ -101,7 +101,7 @@ const postedAt = useMemo(() => {
                 {userCanDelete && (
                   <Text
                     mt="xs"
-                    color="red"
+                    color="red.7"
                     td="underline"
                     size="xs"
                     onClick={() => setCommentToDelete(comment.id)}

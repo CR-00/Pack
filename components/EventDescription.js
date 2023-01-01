@@ -45,24 +45,6 @@ export default function EventDescription({
   let duration = calcDaysBetween(eventDescription.start, eventDescription.end);
   return (
     <Box mt="lg">
-      {session?.user.id === event.creatorId && (
-        <EditDescriptionModal
-          eventDescription={eventDescription}
-          opened={editOpened}
-          onClose={() => setEditOpened(false)}
-        />
-      )}
-
-      {session?.user.id === event.creatorId && (
-        <ActionIcon
-          color="dark"
-          sx={{ marginLeft: "auto" }}
-          onClick={() => setEditOpened(true)}
-        >
-          <IconEdit size={24} />
-          <span className="hidden">Edit Event Description</span>
-        </ActionIcon>
-      )}
       <Flex
         gap="xl"
         mb="xl"

@@ -1,4 +1,5 @@
 import {
+  Box,
   Center,
   Checkbox,
   Group,
@@ -10,7 +11,7 @@ import {
 
 export default function KitForm({ kit, setEventKit }) {
   return (
-    <>
+    <Box ml="lg" mr="lg">
       <Title order={3}>Kit</Title>
       <Text>
         Fill out what kit you&apos;ll be bringing so we can help allocate resources
@@ -34,6 +35,6 @@ export default function KitForm({ kit, setEventKit }) {
           />
         </Group>
       </Center>
-    </>
+    </Box>
   );
 }

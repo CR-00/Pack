@@ -1,4 +1,4 @@
-import { Text, Rating, Box, Title } from "@mantine/core";
+import { Text, Rating, Box, Title, AspectRatio } from "@mantine/core";
 import { IconCalendarEvent } from "@tabler/icons";
 import React from "react";
 import formatDateString from "../lib/formatDateString";
@@ -33,17 +33,20 @@ export default function EventCard({
       })}
       className="image-container"
     >
+      <AspectRatio ratio={9 / 16} mx="auto">
       <Image
         fill
+        sizes="100vh"
         priority={true}
-        src={coordsToTilePng(centerPoint.lat, centerPoint.lng, 12)}
+        src={coordsToTilePng(centerPoint.lat, centerPoint.lng, 11)}
         alt="OpenStreetMap Image"
         style={{
           zIndex: 0,
-          filter: blur ? "blur(3px)" : "",
-          WebkitFilter: blur ? "blur(3px)" : "",
+          filter: blur ? "blur(2px)" : "",
+          WebkitFilter: blur ? "blur(2px)" : "",
         }}
       />
+      </AspectRatio>
       <Box
         style={{
           padding: "10px",

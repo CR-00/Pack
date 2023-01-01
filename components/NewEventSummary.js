@@ -1,9 +1,19 @@
-import { Box, Container, Grid, Group, Paper, Stack, Text } from "@mantine/core";
+import {
+  Box,
+  Container,
+  Grid,
+  Group,
+  Loader,
+  Paper,
+  Stack,
+  Text,
+} from "@mantine/core";
 import React from "react";
 import _ from "lodash";
 import findCenter from "../lib/findCentre";
-import EventCard from "./EventCard";
 import formatDateString from "../lib/formatDateString";
+import dynamic from "next/dynamic";
+import convertCamelCase from "../lib/convertCamelCase";
 
 function TextFields({ formSection }) {
   let ignoredFields = ["description", "tentSleeps", "name", "difficulty"];
@@ -42,7 +52,7 @@ function TextFields({ formSection }) {
       {Object.entries(_.omit(formSection, ignoredFields)).map((entry) => (
         <Group grow spacing="xl" key={entry[0]}>
           <Text align="left" size="sm" color="dimmed" transform="capitalize">
-            {entry[0]}:
+            {convertCamelCase(entry[0])}:
           </Text>
           <Text size="md" align="center">
             {formatValue(entry)}
@@ -54,32 +64,36 @@ function TextFields({ formSection }) {
 }
 
 export default function NewEventSummary({ description, kit, route }) {
-  let centerOfRoute = findCenter(route);
+  const Map = React.useMemo(
+    () =>
+      dynamic(() => import("../components/Map"), {
+        loading: () => <Loader />,
+        ssr: false,
+      }),
+    []
+  );
 
   return (
-    <Container size="md">
-      <Grid grow>
-        <Grid.Col span={6}>
-          <Paper shadow="md" p="xl">
-            <Box p="md" sx={{ maxWidth: "400px", margin: "auto" }}>
-              <EventCard
-                blur={false}
-                height={400}
-                centerPoint={centerOfRoute}
-                name={description.name}
-                start={formatDateString(description.start)}
-                difficulty={description.difficulty}
-              />
-            </Box>
-            <Stack position="center" justify="center" p="md" mt="xl">
-              <Text>Description</Text>
-              <TextFields formSection={description} />
-              <Text>Kit</Text>
-              <TextFields formSection={kit} />
-            </Stack>
-          </Paper>
+    <Box ml="lg" mr="lg">
+      <Map
+        showInfo={false}
+        editable={false}
+        centerPoint={findCenter(route)}
+        eventRoute={route}
+        eventRouteIsSaving={false}
+        setEventRoute={false}
+        style={{ height: "300px" }}
+      />
+      <Grid p="md" mt="xl">
+        <Grid.Col sm={6}>
+          <Text pl="md">Description</Text>
+          <TextFields formSection={description} />
+        </Grid.Col>
+        <Grid.Col sm={6}>
+          <Text pl="md">Kit</Text>
+          <TextFields formSection={kit} />
         </Grid.Col>
       </Grid>
-    </Container>
+    </Box>
   );
 }

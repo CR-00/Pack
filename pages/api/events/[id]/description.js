@@ -5,7 +5,9 @@ import applyRateLimit from "../../../../lib/applyRateLimit";
 
 
 export const descriptionSchema = Joi.object({
-  visibility: Joi.string().valid("PUBLIC", "PRIVATE").required(),
+  id: Joi.string().optional(),
+  eventId: Joi.string().optional(),
+  visibility: Joi.string().valid("PUBLIC", "PRIVATE", "UNLISTED").required(),
   description: Joi.string().max(500).required(),
   name: Joi.string().max(200).required(),
   difficulty: Joi.number().min(1).max(5).required(),

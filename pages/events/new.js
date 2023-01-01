@@ -1,4 +1,13 @@
-import { Button, Group, Paper, Space, Stepper, ThemeIcon } from "@mantine/core";
+import {
+  Button,
+  Container,
+  Group,
+  Paper,
+  Space,
+  Stepper,
+  ThemeIcon,
+  Title,
+} from "@mantine/core";
 import { IconChevronLeft, IconChevronRight } from "@tabler/icons";
 import { useState } from "react";
 import EventDescriptionForm from "../../components/EventDescriptionForm";
@@ -51,11 +60,13 @@ export default function NewEvent() {
   });
 
   const mutation = useMutation(async () => {
-    return await api.post("/events", {
-      eventDescription,
-      eventRoute,
-      eventKit,
-    }).then((res) => Router.push(`/events/${res.data.id}`));
+    return await api
+      .post("/events", {
+        eventDescription,
+        eventRoute,
+        eventKit,
+      })
+      .then((res) => Router.push(`/events/${res.data.id}`));
   });
 
   const descriptionIsProfane = filter.isProfane(eventDescription.description);
@@ -84,79 +95,86 @@ export default function NewEvent() {
   };
 
   return (
-    <Paper p="lg">
-      <Stepper
-        radius="sm"
-        size="sm"
-        active={active}
-        sx={{ display: sm ? "none" : "" }}
-      >
-        {steps.map(({ description, Icon }, idx) => (
-          <Stepper.Step
-            key={idx}
-            icon={
-              <ThemeIcon>
-                <Icon />
-              </ThemeIcon>
-            }
-            label={`Step ${idx + 1}`}
-            description={description}
+    <Container size="lg" mt="xs" pl="md" pr="md">
+      <Paper p="lg">
+        <Title pl="lg" mt="xs" order={2}>New Event</Title>
+        <Stepper
+          pl="lg"
+          pr="lg"
+          mt="md"
+          radius="sm"
+          size="sm"
+          active={active}
+          sx={{ display: sm ? "none" : "" }}
+        >
+          {steps.map(({ description, Icon }, idx) => (
+            <Stepper.Step
+              key={idx}
+              icon={
+                <ThemeIcon>
+                  <Icon />
+                </ThemeIcon>
+              }
+              label={`Step ${idx + 1}`}
+              description={description}
+            />
+          ))}
+        </Stepper>
+        <Space h="xl" />
+        {active === 1 && (
+          <EventDescriptionForm
+            eventDescription={eventDescription}
+            setEventDescription={setEventDescription}
+            nameIsProfane={nameIsProfane}
+            descriptionIsProfane={descriptionIsProfane}
           />
-        ))}
-      </Stepper>
-      <Space h="xl" />
-      {active === 1 && (
-        <EventDescriptionForm
-          eventDescription={eventDescription}
-          setEventDescription={setEventDescription}
-          nameIsProfane={nameIsProfane}
-          descriptionIsProfane={descriptionIsProfane}
-        />
-      )}
-      {active === 2 && (
-        <RouteForm eventRoute={eventRoute} setEventRoute={setEventRoute} />
-      )}
-      {active === 3 && <KitForm kit={eventKit} setEventKit={setEventKit} />}
-      {active === 4 && (
-        <NewEventSummary
-          description={eventDescription}
-          kit={eventKit}
-          route={eventRoute}
-        />
-      )}
-      <Space h="xl" />
-      <Group position="apart">
-        {active > 1 && (
-          <Button
-            variant="subtle"
-            leftIcon={<IconChevronLeft />}
-            onClick={() => setActive(active - 1)}
-          >
-            Prev
-          </Button>
         )}
-        {active < 4 && (
-          <Button
-            disabled={!currentSectionIsValid()}
-            variant="subtle"
-            rightIcon={<IconChevronRight />}
-            sx={{ marginLeft: "auto" }}
-            onClick={() => setActive(active + 1)}
-          >
-            Next
-          </Button>
+        {active === 2 && (
+          <RouteForm eventRoute={eventRoute} setEventRoute={setEventRoute} />
         )}
+        {active === 3 && <KitForm kit={eventKit} setEventKit={setEventKit} />}
         {active === 4 && (
-          <Button
-            loading={mutation.isLoading}
-            sx={{ marginLeft: "auto" }}
-            onClick={() => mutation.mutate()}
-          >
-            Create
-          </Button>
+          <NewEventSummary
+            description={eventDescription}
+            kit={eventKit}
+            route={eventRoute}
+          />
         )}
-      </Group>
-    </Paper>
+        <Space h="xl" />
+        <Group position="apart">
+          {active > 1 && (
+            <Button
+              variant="subtle"
+              leftIcon={<IconChevronLeft />}
+              onClick={() => setActive(active - 1)}
+            >
+              Prev
+            </Button>
+          )}
+          {active < 4 && (
+            <Button
+              disabled={!currentSectionIsValid()}
+              variant="subtle"
+              rightIcon={<IconChevronRight />}
+              sx={{ marginLeft: "auto" }}
+              onClick={() => setActive(active + 1)}
+            >
+              Next
+            </Button>
+          )}
+          {active === 4 && (
+            <Button
+              size="md"
+              loading={mutation.isLoading}
+              sx={{ marginLeft: "auto" }}
+              onClick={() => mutation.mutate()}
+            >
+              Create
+            </Button>
+          )}
+        </Group>
+      </Paper>
+    </Container>
   );
 }
 
