@@ -50,7 +50,7 @@ export default function Home({ events, numberOfEvents }) {
   });
 
   return (
-    <Paper p="md">
+    <Paper p="md" sx={{ maxWidth: "1440px", margin: "auto" }}>
       <Flex
         grow={1}
         justify="space-between"
@@ -86,10 +86,10 @@ export default function Home({ events, numberOfEvents }) {
           <Loader />
         </Center>
       )}
-      <Grid gutter="xs">
+      <Grid gutter="xs" justify="center">
         {(!isFetching || page === 1) &&
           data?.data.events.map((event) => (
-            <Grid.Col key={event.id} span={12} xs={6} sm={4} lg={2} xl={2}>
+            <Grid.Col key={event.id} span={6} xs={6} sm={4} lg={2} xl={2}>
               <Link
                 href={`/events/${event.id}`}
                 prefetch={false}
