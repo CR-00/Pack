@@ -50,6 +50,7 @@ export default function EventDescriptionForm({
       <Grid.Col span={12}>
         <DateRangePicker
           dropdownType="modal"
+          minDate={new Date()}
           value={[new Date(eventDescription.start), new Date(eventDescription.end)]}
           onChange={(v) =>
             setEventDescription({ ...eventDescription, start: v[0], end: v[1] })

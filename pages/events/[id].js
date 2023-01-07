@@ -32,30 +32,17 @@ import { EventSettings } from "../../components/EventSettings";
 import CommentsSection from "../../components/CommentsSection";
 import PII from "../../lib/PII";
 import coordsToTilePng from "../../lib/coordsToTilePng";
-
-const tabs = [
-  { label: "overview", Icon: IconNotebook },
-  { label: "route", Icon: IconMapPin },
-  { label: "kit", Icon: IconListDetails },
-  { label: "attendees", Icon: IconUsers },
-];
+import EventTabs from "../../components/EventTabs";
+import EventHeader from "../../components/EventHeader";
+import EventMetaTags from "../../components/EventMetaTags";
 
 export default function Event({ event, attendees, comments }) {
-
-  const [tab, setTab] = React.useState("overview");
-
-  const { description, kitItems, creator, coordinates } = event;
+  const { description, creator, coordinates } = event;
 
   const { data: attendeeData } = useQuery({
     queryKey: ["attendance", event.id],
     queryFn: () => api.get(`/events/${event.id}/attendance`),
     initialData: { data: attendees },
-  });
-
-  const { data: kitItemData } = useQuery({
-    queryKey: ["kitItems", event.id],
-    queryFn: () => api.get(`/events/${event.id}/kit/items`),
-    initialData: { data: kitItems },
   });
 
   const { data: eventDescription } = useQuery({
@@ -66,123 +53,32 @@ export default function Event({ event, attendees, comments }) {
 
   const { data: session } = useSession();
 
-  // Preload this tab.
-  const Map = useMemo(
-    () =>
-      dynamic(() => import("../../components/Map"), {
-        loading: () => <Loader />,
-        ssr: false,
-      }),
-    []
-  );
-
-  const updateRouteMutation = useMutation(async (markers) => {
-    return await api.put(`/events/${event.id}/route`, markers);
-  });
-
   let userIsCreator = session?.user.id === event.creatorId;
 
   const centerPoint = findCenter(coordinates);
 
   return (
     <>
-      <Head>
-        <meta
-          property="og:title"
-          content={`Pack - ${eventDescription.data.name}`}
-        />
-        <meta
-          property="og:description"
-          content={eventDescription.data.description}
-        />
-        <meta
-          property="og:image"
-          content={coordsToTilePng(centerPoint.lat, centerPoint.lng, 7)}
-        />
-      </Head>
-      <Container size="lg" p="xs">
+      <EventMetaTags event={event} />
+      <Container size="lg" p="xl">
         <Paper p="md">
-          <Group p="md" position="apart" align="top">
-            <Title>{eventDescription.data.name}</Title>
-            <Box sx={(theme) => ({ paddingRight: theme.spacing.xl })}>
-              <Avatar src={creator.image} alt="event-creator-avatar" />
-              <Text size="xs" align="center" weight={700}>
-                {creator.name}
-              </Text>
-            </Box>
-          </Group>
-          <Tabs value={tab}>
-            <Tabs.List>
-              {tabs.map(({ label, Icon }) => (
-                <Tabs.Tab
-                  onClick={() => setTab(label)}
-                  key={label}
-                  value={label}
-                  icon={
-                    <ThemeIcon>
-                      <Icon size={18} />
-                    </ThemeIcon>
-                  }
-                >
-                  <Text transform="capitalize">{label}</Text>
-                </Tabs.Tab>
-              ))}
-              {userIsCreator && (
-                <Tabs.Tab
-                  onClick={() => setTab("settings")}
-                  key="settings"
-                  value="settings"
-                  icon={
-                    <ThemeIcon>
-                      <IconSettings size={18} />
-                    </ThemeIcon>
-                  }
-                >
-                  <Text>Settings</Text>
-                </Tabs.Tab>
-              )}
-            </Tabs.List>
-            <Tabs.Panel value="overview" pt="xl">
-              <EventDescription
-                attendees={attendeeData.data}
-                event={event}
-                eventDescription={eventDescription.data}
-                centerPoint={centerPoint}
-              />
-            </Tabs.Panel>
-            <Tabs.Panel
-              value="route"
-              pt="xl"
-              sx={(theme) => ({
-                marginLeft: 2 * theme.spacing.xl,
-                marginRight: 2 * theme.spacing.xl,
-              })}
-            >
-              <Map
-                showInfo={true}
-                editable={userIsCreator}
-                centerPoint={centerPoint}
-                eventRoute={coordinates}
-                eventRouteIsSaving={updateRouteMutation.isLoading}
-                setEventRoute={(markers) => updateRouteMutation.mutate(markers)}
-              />
-            </Tabs.Panel>
-            <Tabs.Panel value="kit" pt="xl">
-              <KitSummary
-                kitItems={kitItemData.data}
-                attendees={attendeeData.data}
-              />
-            </Tabs.Panel>
-            <Tabs.Panel value="attendees" pt="xl">
-              <EventAttendees attendees={attendeeData.data} />
-            </Tabs.Panel>
-            <Tabs.Panel value="settings" pt="xl">
-              <EventSettings event={event} />
-            </Tabs.Panel>
-          </Tabs>
-          {tab !== "settings" && (
+          <Box
+            mt="xl"
+            sx={(theme) => ({
+              marginLeft: theme.spacing.md * 2,
+              marginRight: theme.spacing.md * 2,
+            })}
+          >
+            <EventHeader event={event} creator={creator} />
+            <EventTabs event={event} />
+            <EventDescription
+              attendees={attendeeData.data}
+              event={event}
+              eventDescription={eventDescription.data}
+              centerPoint={centerPoint}
+            />
             <CommentsSection comments={comments} userIsCreator={userIsCreator} />
-          )}
+          </Box>
         </Paper>
       </Container>
     </>
@@ -208,7 +104,7 @@ export async function getStaticProps(context) {
     },
     include: {
       description: true,
-      kitItems: true,
+      kitItems: false,
       coordinates: true,
       creator: true,
       attendees: false,

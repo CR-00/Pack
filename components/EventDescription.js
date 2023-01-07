@@ -21,12 +21,10 @@ import {
 import formatDateString from "../lib/formatDateString";
 import calcDaysBetween from "../lib/calcDaysBetween";
 import { useSession } from "next-auth/react";
-import EditDescriptionModal from "./EditDescriptionModal";
 import { useMemo, useState } from "react";
 import dynamic from "next/dynamic";
 
 export default function EventDescription({
-  event,
   eventDescription,
   centerPoint,
   attendees,
@@ -40,9 +38,11 @@ export default function EventDescription({
     []
   );
 
-  const { data: session } = useSession();
-  const [editOpened, setEditOpened] = useState(false);
-  let duration = calcDaysBetween(eventDescription.start, eventDescription.end);
+  let duration = calcDaysBetween(
+    eventDescription.start,
+    eventDescription.end
+  );
+  
   return (
     <Box mt="lg">
       <Flex
@@ -88,10 +88,7 @@ export default function EventDescription({
       <Box
         mt="xl"
         mb="xl"
-        sx={(theme) => ({
-          marginLeft: 2 * theme.spacing.xl,
-          marginRight: 2 * theme.spacing.xl,
-        })}
+      
       >
         <MapPreview
           zoomable={true}
@@ -107,8 +104,7 @@ export default function EventDescription({
       </Box>
       <Box
         sx={(theme) => ({
-          marginLeft: 2 * theme.spacing.xl,
-          marginRight: 2 * theme.spacing.xl,
+         
           overflowWrap: "break-word",
           wordWrap: "break-word",
         })}

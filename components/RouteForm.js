@@ -1,4 +1,4 @@
-import { Box, Loader, Space, Text, Title } from "@mantine/core";
+import { Box, Center, Loader, Space, Text, Title } from "@mantine/core";
 import dynamic from "next/dynamic";
 import React, { useState } from "react";
 import findCenter from "../lib/findCentre";
@@ -13,7 +13,7 @@ export default function RouteForm({ eventRoute, setEventRoute }) {
   const Map = React.useMemo(
     () =>
       dynamic(() => import("../components/Map"), {
-        loading: () => <Loader />,
+        loading: () => <Center><Loader /></Center>,
         ssr: false,
       }),
     []
@@ -27,6 +27,8 @@ export default function RouteForm({ eventRoute, setEventRoute }) {
       </Text>
       <Space h="xl" />
       <Map
+        editable={true}
+        saveable={true}
         centerPoint={center}
         eventRoute={eventRoute}
         setEventRoute={setEventRoute}

@@ -21,6 +21,8 @@ export default function EventAttendees({ attendees }) {
   const router = useRouter();
   const { id } = router.query;
 
+  console.log(attendees);
+
   const [signUpOpen, setSignUpOpen] = useState(false);
 
   // If the user is already signed up hide button.
@@ -73,6 +75,7 @@ export default function EventAttendees({ attendees }) {
         ) : (
           <Group spacing="xl">
             <Select
+              aria-label="attendance status select"
               defaultValue={usersEventAttendee.status}
               data={[
                 { value: "ACCEPTED", label: "Accepted" },
@@ -89,7 +92,7 @@ export default function EventAttendees({ attendees }) {
   ));
 
   return (
-    <Container p="xl">
+    <Container mt="xl">
       <EventSignupModal
         opened={signUpOpen}
         onClose={() => setSignUpOpen(false)}

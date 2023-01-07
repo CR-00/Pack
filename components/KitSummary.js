@@ -1,6 +1,7 @@
 import {
   ActionIcon,
   Avatar,
+  Box,
   Button,
   Container,
   Group,
@@ -39,7 +40,7 @@ export default function KitSummary({ kitItems, attendees }) {
         </td>
         <td>
           <Group>
-            <Avatar src={attendee.image} />
+            <Avatar src={attendee.image} alt="item-owner-avatar"/>
             <Text>{attendee.name}</Text>
           </Group>
         </td>
@@ -82,7 +83,7 @@ export default function KitSummary({ kitItems, attendees }) {
   );
 
   return (
-    <>
+    <Box pl="md" pr="md">
       <EditKitModal
         item={targetItem}
         opened={editItemOpen}
@@ -94,7 +95,7 @@ export default function KitSummary({ kitItems, attendees }) {
         onClose={() => setDeleteItemOpen(false)}
       />
       <AddKitModal opened={addItemOpen} onClose={() => setAddItemOpen(false)} />
-      <Container p="xl">
+      <Box pt="xl">
         {usersAttendeeEntry && (
           <Button
             sx={(theme) => ({ float: "right", marginBottom: theme.spacing.sm })}
@@ -103,7 +104,7 @@ export default function KitSummary({ kitItems, attendees }) {
             Add Item
           </Button>
         )}
-        <Table>
+        <Table align="center">
           <thead>
             <tr>
               <th>Name</th>
@@ -114,7 +115,7 @@ export default function KitSummary({ kitItems, attendees }) {
           </thead>
           <tbody>{kitItems.length ? rows : empty}</tbody>
         </Table>
-      </Container>
-    </>
+      </Box>
+    </Box>
   );
 }

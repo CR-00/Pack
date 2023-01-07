@@ -22,7 +22,7 @@ import BadWordsFilter from "bad-words";
 
 const filter = new BadWordsFilter();
 
-export function EventSettings({ event }) {
+export default function EventSettings({ event }) {
   const [deleteEventOpen, setDeleteEventOpen] = useState(false);
 
   const form = useForm({
@@ -66,7 +66,7 @@ export function EventSettings({ event }) {
   });
 
   return (
-    <>
+    <Box pt="xl" pb="xl">
       <DeleteEventModal
         event={event}
         opened={deleteEventOpen}
@@ -84,31 +84,26 @@ export function EventSettings({ event }) {
             { label: "Public", value: "PUBLIC" },
             { label: "Unlisted", value: "UNLISTED" },
           ]}
-          {...form.getInputProps('visibility')}
+          {...form.getInputProps("visibility")}
         />
         <Stack mt="lg">
           <Text size="sm">Difficulty:</Text>
-          <Rating
-            color="brand"
-            {...form.getInputProps('difficulty')}
-          />
+          <Rating color="brand" {...form.getInputProps("difficulty")} />
           <DateRangePicker
             placeholder="Start date"
             label="Start"
-            values={[form.values.start, form.values.end]}
+            minDate={new Date()}
+            value={[
+              new Date(event.description.start),
+              new Date(event.description.end),
+            ]}
             onChange={(v) => {
-              form.setFieldValue('start', v[0]);
-              form.setFieldValue('end', v[1]);
+              form.setFieldValue("start", v[0]);
+              form.setFieldValue("end", v[1]);
             }}
           />
-          <TextInput
-            label="Name"
-            {...form.getInputProps('name')}
-          />
-          <Textarea
-            label="About"
-            {...form.getInputProps('description')}
-          />
+          <TextInput label="Name" {...form.getInputProps("name")} />
+          <Textarea label="About" {...form.getInputProps("description")} />
         </Stack>
         <Flex justify="flex-end" mt="xl" gap="sm">
           <Button
@@ -131,6 +126,6 @@ export function EventSettings({ event }) {
           </Button>
         </Flex>
       </Box>
-    </>
+    </Box>
   );
 }

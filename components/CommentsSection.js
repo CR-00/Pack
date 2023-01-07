@@ -54,7 +54,7 @@ export default function CommentsSection({ comments, userIsCreator }) {
   );
 
   return (
-    <Box pl="lg" pr="lg">
+    <Box>
       <Modal
         opened={commentToDelete}
         onClose={() => setCommentToDelete(null)}
@@ -71,7 +71,7 @@ export default function CommentsSection({ comments, userIsCreator }) {
           DELETE
         </Button>
       </Modal>
-      <Box pl="sm" pr="sm" mt="xl" mb="sm" sx={{ overflow: "hidden" }}>
+      <Box mt="xl" mb="sm" sx={{ overflow: "hidden" }}>
         <form
           onSubmit={(e) => {
             e.preventDefault();

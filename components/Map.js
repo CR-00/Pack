@@ -23,7 +23,6 @@ import roundLatLng from "../lib/roundLatLng";
 import openStreetMapLayers from "../lib/openStreetMapLayers";
 import _ from "lodash";
 
-
 function Route({ setCenter, setRoute, markers, setMarkers, editable = true }) {
   const map = useMap();
 
@@ -81,6 +80,7 @@ export default function MapLayout({
   eventRoute,
   setEventRoute,
   editable,
+  saveable,
   showInfo = true,
   eventRouteIsSaving = true,
 }) {
@@ -140,6 +140,7 @@ export default function MapLayout({
               eventRouteIsSaving={eventRouteIsSaving}
               changes={!_.isEqual(markers, eventRoute)}
               editable={editable}
+              saveable={saveable}
               map={map}
               mapStyle={mapStyle}
               markers={markers}
@@ -162,6 +163,7 @@ function MapInfo({
   mapStyle,
   setMapStyle,
   editable,
+  saveable,
   changes,
 }) {
   if (!map) return <Loader />;
@@ -246,17 +248,15 @@ function MapInfo({
             <Text>{`${roundLatLng(center.lat)}`}</Text>
           </Flex>
         </Flex>
-        {editable && (
-          <>
-            <Divider m="sm" />
-            <Button
-              disabled={!changes || !markers.length}
-              loading={eventRouteIsSaving}
-              onClick={() => setEventRoute(markers)}
-            >
-              Save
-            </Button>
-          </>
+        {editable && saveable && <Divider m="sm" />}
+        {editable && saveable && (
+          <Button
+            disabled={!changes || !markers.length}
+            loading={eventRouteIsSaving}
+            onClick={() => setEventRoute(markers)}
+          >
+            Save
+          </Button>
         )}
       </Flex>
     </Stack>
