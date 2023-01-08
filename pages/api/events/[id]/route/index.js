@@ -2,6 +2,8 @@ import getServerSession from "../../../../../lib/getServerSession";
 import prisma from "../../../../../lib/prisma";
 import Joi from "joi";
 import applyRateLimit from "../../../../../lib/applyRateLimit";
+import getPointElevation from "../../../../../lib/getPointElevation";
+
 
 export const routeSchema = Joi.array().items(
   Joi.object({
@@ -9,6 +11,7 @@ export const routeSchema = Joi.array().items(
     eventId: Joi.string().optional(),
     lat: Joi.number().required(),
     lng: Joi.number().required(),
+    elevation: Joi.number().optional(),
   })
 );
 
@@ -45,6 +48,23 @@ export default async function handler(req, res) {
       return res.status(400).send({ error: error.details[0].message });
     }
 
+    const route = req.body;
+
+    const pointsWithElevation = await getPointElevation(route)
+    pointsWithElevation.forEach((point, idx) => {
+      route[idx].elevation = point.elevation;
+    });
+
+    if (
+      !pointsWithElevation.length ||
+      pointsWithElevation.length !== route.length
+    ) {
+      return res
+        .status(400)
+        .send({ error: "Unable to gather elevation data." });
+    }
+
+
     // Delete all old and add new in a transaction.
     const newRoute = await prisma.$transaction([
       prisma.coordinate.deleteMany({
@@ -53,7 +73,7 @@ export default async function handler(req, res) {
         },
       }),
       prisma.coordinate.createMany({
-        data: req.body.map((c) => ({
+        data: route.map((c) => ({
           ...c,
           eventId: id,
         })),

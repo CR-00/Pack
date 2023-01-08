@@ -1,40 +1,21 @@
 import {
-  Avatar,
   Box,
   Container,
-  Group,
-  Loader,
   Paper,
-  Tabs,
-  Text,
-  ThemeIcon,
-  Title,
 } from "@mantine/core";
-import React, { useMemo } from "react";
+import React from "react";
 import prisma, { exclude } from "../../lib/prisma";
-import {
-  IconNotebook,
-  IconMapPin,
-  IconListDetails,
-  IconUsers,
-  IconSettings,
-} from "@tabler/icons";
 import EventDescription from "../../components/EventDescription";
-import dynamic from "next/dynamic";
-import Head from "next/head";
 import findCenter from "../../lib/findCentre";
-import KitSummary from "../../components/KitSummary";
-import EventAttendees from "../../components/EventAttendees";
-import { useMutation, useQuery } from "@tanstack/react-query";
+import { useQuery } from "@tanstack/react-query";
 import api from "../../lib/api";
 import { useSession } from "next-auth/react";
-import { EventSettings } from "../../components/EventSettings";
 import CommentsSection from "../../components/CommentsSection";
 import PII from "../../lib/PII";
-import coordsToTilePng from "../../lib/coordsToTilePng";
 import EventTabs from "../../components/EventTabs";
 import EventHeader from "../../components/EventHeader";
 import EventMetaTags from "../../components/EventMetaTags";
+import getPointElevation from "../../lib/getPointElevation";
 
 export default function Event({ event, attendees, comments }) {
   const { description, creator, coordinates } = event;
@@ -162,6 +143,9 @@ export async function getStaticProps(context) {
     }
     return c;
   };
+
+  let elevation = await getPointElevation(event.coordinates);
+  console.log(elevation);
 
   return {
     props: {

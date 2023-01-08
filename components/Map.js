@@ -22,6 +22,8 @@ import "leaflet-routing-machine/dist/leaflet-routing-machine.css";
 import roundLatLng from "../lib/roundLatLng";
 import openStreetMapLayers from "../lib/openStreetMapLayers";
 import _ from "lodash";
+import getPointElevation from "../lib/getPointElevation";
+import ElevationChart from "./ElevationChart";
 
 function Route({ setCenter, setRoute, markers, setMarkers, editable = true }) {
   const map = useMap();
@@ -30,10 +32,14 @@ function Route({ setCenter, setRoute, markers, setMarkers, editable = true }) {
   const route = RoutingMachineRef.current;
 
   useMapEvents({
-    click: (e) => {
+    click: async (e) => {
       if (!editable) return;
+      const elevation = await getPointElevation([e.latlng]);
       // Wrap the latlng to keep in bounds.
-      setMarkers([...markers, e.latlng.wrap()]);
+      setMarkers([
+        ...markers,
+        { ...e.latlng.wrap(), elevation: elevation[0].elevation },
+      ]);
     },
     movestart: () => {
       setCenter(map.getCenter());
@@ -93,7 +99,7 @@ export default function MapLayout({
   useEffect(() => {
     // TODO: stop this from firing for users who arent owners.
     // If its editable, save button controls this.
-    if (setEventRoute && !editable) {
+    if (setEventRoute && !saveable && editable) {
       setEventRoute(markers);
     }
   }, [markers]);
@@ -111,9 +117,9 @@ export default function MapLayout({
             scrollWheelZoom={false}
             center={center}
             zoom={5}
-            maxZoom={10}
+            maxZoom={15}
             style={{
-              height: "650px",
+              height: "800px",
               zIndex: "0",
             }}
             whenReady={(e) => setMap(e.target)}
@@ -172,7 +178,7 @@ function MapInfo({
 
   const renderMarkers = () => {
     return (
-      <Stack>
+      <Stack sx={{ maxHeight: "200px", overflowY: "auto" }} pr="md">
         {!markers.length ? (
           <Group pb="sm">
             <ThemeIcon color="gray" variant="outline" size="sm">
@@ -208,7 +214,9 @@ function MapInfo({
   };
 
   return (
-    <Stack>
+    <Stack mt="lg">
+      {markers.length > 1 && <ElevationChart markers={markers}/>}
+      {markers.length > 1 && <Divider m="sm"/>}
       <Select
         label="Map style"
         zIndex={999}

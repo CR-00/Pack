@@ -7,7 +7,7 @@ const prisma = new PrismaClient();
 function getRandomRoute() {
   // Bunch of random coordinates in the UK, 
   // 71% of the earths surface is water covered according to
-  // google, which does not make for a
+  // google, which does not make for a good hike.
   const coords = [
     { 
       lat: 53.243595,
@@ -62,7 +62,7 @@ const dropAll = async () => {
 
 
 const seed = async () => {
-  for (let i = 0; i < 100; i++) {
+  for (let i = 0; i < 5; i++) {
     await prisma.event
       .create({
         data: {

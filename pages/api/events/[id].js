@@ -6,6 +6,7 @@ import { routeSchema } from "./[id]/route";
 import { kitItemSchema } from "./[id]/kit/items";
 import Joi from "joi";
 import BadWordsFilter from "bad-words";
+import getPointElevation from "../../../lib/getPointElevation";
 
 const filter = new BadWordsFilter();
 
@@ -88,6 +89,20 @@ export default async function handler(req, res) {
       },
     });
 
+    const pointsWithElevation = await getPointElevation(coordinates)
+    pointsWithElevation.forEach((point, idx) => {
+      coordinates[idx].elevation = point.elevation;
+    });
+
+    if (
+      !pointsWithElevation.length ||
+      pointsWithElevation.length !== coordinates.length
+    ) {
+      return res
+        .status(400)
+        .send({ error: "Unable to gather elevation data." });
+    }
+
     try {
       prisma.$transaction(async (tx) => {
         kitItems.map((item) => {
@@ -100,7 +115,7 @@ export default async function handler(req, res) {
             },
           });
 
-          coordinates.map((coordinate) => {
+          pointsWithElevation.map((coordinate) => {
             prisma.coordinate.update({
               where: {
                 id: coordinate.id,

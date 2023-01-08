@@ -28,7 +28,7 @@ export default function RouteForm({ eventRoute, setEventRoute }) {
       <Space h="xl" />
       <Map
         editable={true}
-        saveable={true}
+        saveable={false}
         centerPoint={center}
         eventRoute={eventRoute}
         setEventRoute={setEventRoute}

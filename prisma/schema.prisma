@@ -94,6 +94,7 @@ model Coordinate {
   eventId String
   lat     Float
   lng     Float
+  elevation Int?
 }
 
 model KitItem {

@@ -5,6 +5,7 @@ import { routeSchema } from "./[id]/route";
 import Joi from "joi";
 import applyRateLimit from "../../../lib/applyRateLimit";
 import PII from "../../../lib/PII";
+import getPointElevation from "../../../lib/getPointElevation";
 
 
 const bringingKitSchema = Joi.object({
@@ -76,7 +77,7 @@ export default async (req, res) => {
     // to get the total.
     let numberOfEvents = limit * page + [...events].length;
     events = events.slice(0, limit);
-    
+
     // Update with attendee length.
     events.forEach((e) => {
       e.attendees = e.attendees.length;
@@ -85,12 +86,11 @@ export default async (req, res) => {
 
     res.json({
       events,
-      numberOfEvents
+      numberOfEvents,
     });
   }
 
   if (req.method === "POST") {
-
     const session = await getServerSession(req, res);
     if (!session) {
       res.status(401).send({ error: "Not signed in." });
@@ -117,11 +117,30 @@ export default async (req, res) => {
     const end = new Date(eventDescription.end);
 
     if (start > end) {
-      return res.status(400).send({ error: "Start date must be before end date." });
+      return res
+        .status(400)
+        .send({ error: "Start date must be before end date." });
     }
 
     if (start < new Date() - 1000 * 60 * 60 * 24) {
-      return res.status(400).send({ error: "Start date must be in the future." });
+      return res
+        .status(400)
+        .send({ error: "Start date must be in the future." });
+    }
+
+    console.log(eventRoute);
+    const pointsWithElevation = await getPointElevation(eventRoute);
+    pointsWithElevation.forEach((point, idx) => {
+      eventRoute[idx].elevation = point.elevation;
+    });
+
+    if (
+      !pointsWithElevation.length ||
+      pointsWithElevation.length !== eventRoute.length
+    ) {
+      return res
+        .status(400)
+        .send({ error: "Unable to gather elevation data." });
     }
 
     const result = await prisma.event.create({

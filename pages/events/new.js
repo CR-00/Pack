@@ -86,6 +86,7 @@ export default function NewEvent() {
         !descriptionIsProfane
       );
     } else if (active === 2) {
+      console.log(eventRoute)
       return eventRoute.length;
     } else if (active === 3) {
       // All this stuff is optional.
@@ -130,7 +131,7 @@ export default function NewEvent() {
           />
         )}
         {active === 2 && (
-          <RouteForm eventRoute={eventRoute} setEventRoute={setEventRoute} />
+          <RouteForm eventRoute={eventRoute} setEventRoute={setEventRoute}/>
         )}
         {active === 3 && <KitForm kit={eventKit} setEventKit={setEventKit} />}
         {active === 4 && (
